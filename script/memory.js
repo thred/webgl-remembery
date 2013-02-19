@@ -10,17 +10,27 @@ var cardBottomMaterial;
 var cardGeometry;
 var cardMeshes = [];
 
-var width = 6;
-var height = 4;
+var boardWidth = 8;
+var boardHeight = 5;
 var cards = [];
 var state = 0;
 var selectedIndices = [];
 var stack = 0;
 
+var mouseX = 0;
+var mouseY = 0;
+var windowWidth = 0;
+var windowHeight = 0;
+
+var cardHeight = 0.3;
+
 init();
 animate();
 
 function init() {
+	windowWidth = window.innerWidth;
+	windowHeight = window.innerHeight;
+
 	scene = new THREE.Scene();
 
 	initCards();
@@ -28,24 +38,24 @@ function init() {
 	initCamera();
 	initLights();
 	initMaterials();
-	initGeometries();
-	initMeshes();
+	initScene();
 
 	projector = new THREE.Projector();
 
 	initRenderer();
 
 	document.addEventListener('mousedown', onDocumentMouseDown, false);
+	document.addEventListener('mousemove', onDocumentMouseMove, false);
 	window.addEventListener('resize', onWindowResize, false);
 }
 
 function initCards() {
-	for ( var i = 0; i < width * height; i += 2) {
+	for ( var i = 0; i < boardWidth * boardHeight; i += 2) {
 		cards[i] = cards[i + 1] = Math.floor(i / 2);
 	}
 
-	for ( var i = 0; i < width * height; i++) {
-		var j = Math.floor(Math.random() * width * height);
+	for ( var i = 0; i < boardWidth * boardHeight; i++) {
+		var j = Math.floor(Math.random() * boardWidth * boardHeight);
 		var tmp = cards[i];
 		cards[i] = cards[j];
 		cards[j] = tmp;
@@ -53,34 +63,42 @@ function initCards() {
 }
 
 function initCamera() {
-	camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
+	camera = new THREE.PerspectiveCamera(70, window.innerWidth
+			/ window.innerHeight, 1, 1000);
 	camera.position.x = 0;
-	camera.position.y = -20;
-	camera.position.z = 30;
-	camera.rotation.x = Math.PI / 8;
+	camera.position.y = -15;
+	camera.position.z = 35;
+	// camera.rotation.x = Math.PI / 12;
+
+	camera.lookAt(new THREE.Vector3(0, -5, 0));
 
 	scene.add(camera);
 }
 
 function initLights() {
-	scene.add(new THREE.AmbientLight(0x808080));
+	scene.add(new THREE.AmbientLight(0x404040));
 
 	var light = new THREE.DirectionalLight(0xffffff, 1);
-	light.position.set(-0.5, 1, 1).normalize();
+	light.position.set(-0.5, 0.5, 0.5).normalize();
 	scene.add(light);
 }
 
 function initMaterials() {
+	var cardBottomTexture = THREE.ImageUtils.loadTexture('asset/cardback.png');
+
 	cardBottomMaterial = new THREE.MeshLambertMaterial({
-		color : 0xffffff,
-		map : THREE.ImageUtils.loadTexture('asset/background.jpg')
+		color : 0x000080,
+		map : cardBottomTexture
 	});
+
+	cardBottomTexture.wrapS = cardBottomTexture.wrapT = THREE.RepeatWrapping;
+	cardBottomTexture.repeat.set(4, 4);
 
 	cardSideMaterial = new THREE.MeshLambertMaterial({
 		color : 0x808080
 	});
 
-	for ( var i = 0; i < width * height / 2; i += 1) {
+	for ( var i = 0; i < boardWidth * boardHeight / 2; i += 1) {
 		cardTopMaterials.push(new THREE.MeshLambertMaterial({
 			color : 0xffffff,
 			map : THREE.ImageUtils.loadTexture('asset/memory' + i + ".jpg")
@@ -88,17 +106,44 @@ function initMaterials() {
 	}
 }
 
+function initScene() {
+	initTable();
+
+	initGeometries();
+	initMeshes();
+}
+
+function initTable() {
+	var width = (boardWidth + 2.5) * 9 - 1;
+	var height = (boardHeight + 0.5) * 9 - 1;
+	var texture = THREE.ImageUtils.loadTexture('asset/background.png');
+	var material = new THREE.MeshLambertMaterial({
+		color : 0x80ff80,
+		map : texture
+	});
+
+	texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+	texture.repeat.set(width / 5, height / 5);
+	texture.offset.set(1.25, 1.25)
+
+	var geometry = new THREE.PlaneGeometry(width, height, 1, 1);
+	var mesh = new THREE.Mesh(geometry, material);
+
+	mesh.position.z = -cardHeight / 2;
+
+	scene.add(mesh);
+}
+
 function initGeometries() {
-	cardGeometry = new THREE.CubeGeometry(8, 8, 0.3, 1, 1, 1);
+	cardGeometry = new THREE.CubeGeometry(8, 8, cardHeight, 1, 1, 1);
 }
 
 function initMeshes() {
-	for ( var y = 0; y < height; y++) {
-		for ( var x = 0; x < width; x++) {
-			card = createCard(x + y * width);
+	for ( var y = 0; y < boardHeight; y++) {
+		for ( var x = 0; x < boardWidth; x++) {
+			card = createCard(x + y * boardWidth);
 
 			card.position = calcCardPosition(x, y, 0);
-			// card.rotation.y = Math.PI;
 			card.rotation.z = Math.PI / 16 * (Math.random() - 0.5);
 
 			scene.add(card);
@@ -109,16 +154,18 @@ function initMeshes() {
 }
 
 function calcCardPosition(x, y, z) {
-	var ox = (-width * 8 + 7) / 2 - 4;
-	var oy = (-height * 8 + 7) / 2 - 4;
+	var ox = (-boardWidth * 9 - 1) / 2 + 5;
+	var oy = (-boardHeight * 9 - 1) / 2 + 5;
 
 	return new THREE.Vector3(ox + x * 9, oy + y * 9, z);
 }
 
 function createCard(index) {
-	var materials = [ cardSideMaterial, cardSideMaterial, cardSideMaterial, cardSideMaterial, cardBottomMaterial,
+	var materials = [ cardSideMaterial, cardSideMaterial, cardSideMaterial,
+			cardSideMaterial, cardBottomMaterial,
 			cardTopMaterials[cards[index]] ];
-	var card = new THREE.Mesh(cardGeometry, new THREE.MeshFaceMaterial(materials));
+	var card = new THREE.Mesh(cardGeometry, new THREE.MeshFaceMaterial(
+			materials));
 
 	card.index = index;
 
@@ -133,25 +180,57 @@ function initRenderer() {
 }
 
 function animate() {
+
+	camera.position.x = mouseX * 5;
+	camera.position.y = -18 - mouseY * 5;
+
+	camera.lookAt(new THREE.Vector3(mouseX * 5, -5, 0));
+	// camera.rotation.z = Math.PI / 16 * -mouseX;
+
 	requestAnimationFrame(animate);
 	renderer.render(scene, camera);
 	TWEEN.update();
-
-	// for ( var i = 0; i < cards.length; i++) {
-	// cards[i].rotation.x += 0.02;
-	// cards[i].rotation.y += 0.01;
-	// }
 }
 
 function onDocumentMouseDown(event) {
 	event.preventDefault();
 
+	if (state >= 2) {
+		state = 0;
+
+		if (cards[selectedIndices[0]] == cards[selectedIndices[1]]) {
+			var x = -1;
+			var y = boardHeight - 2;
+			var z = stack * (cardHeight * 2);
+
+			if (stack >= boardWidth * boardHeight / 4) {
+				x = boardWidth;
+				z = (stack - Math.floor(boardWidth * boardHeight / 4))
+						* (cardHeight * 2);
+			}
+
+			stackCard(cardMeshes[selectedIndices[0]], calcCardPosition(x, y, z));
+			cards[selectedIndices[0]] = -1;
+
+			stackCard(cardMeshes[selectedIndices[1]], calcCardPosition(x, y, z
+					+ cardHeight));
+			cards[selectedIndices[1]] = -1;
+
+			stack += 1;
+		} else {
+			hideCard(cardMeshes[selectedIndices[0]]);
+			hideCard(cardMeshes[selectedIndices[1]]);
+		}
+	}
+
 	if (state < 2) {
-		var vector = new THREE.Vector3((event.clientX / window.innerWidth) * 2 - 1,
+		var vector = new THREE.Vector3(
+				(event.clientX / window.innerWidth) * 2 - 1,
 				-(event.clientY / window.innerHeight) * 2 + 1, 0.5);
 		projector.unprojectVector(vector, camera);
 
-		var raycaster = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
+		var raycaster = new THREE.Raycaster(camera.position, vector.sub(
+				camera.position).normalize());
 		var intersects = raycaster.intersectObjects(cardMeshes);
 
 		if ((intersects.length > 0) && (intersects[0])) {
@@ -165,44 +244,7 @@ function onDocumentMouseDown(event) {
 				}
 			}
 		}
-	} else {
-		state = 0;
-
-		if (cards[selectedIndices[0]] == cards[selectedIndices[1]]) {
-			var x = -1;
-			var y = height - 2;
-			var z = stack * 0.6;
-
-			if (stack >= width * height / 4) {
-				x = width;
-				z = (stack - Math.floor(width * height / 4)) * 0.6;
-			}
-
-			stackCard(cardMeshes[selectedIndices[0]], calcCardPosition(x, y, z));
-
-			// cardMeshes[selectedIndices[0]].position = calcCardPosition(x, y);
-			// cardMeshes[selectedIndices[0]].position.z = z;
-			// cardMeshes[selectedIndices[0]].rotation.z = Math.PI / 16 *
-			// (Math.random() -
-			// 0.5);
-			cards[selectedIndices[0]] = -1;
-
-			stackCard(cardMeshes[selectedIndices[1]], calcCardPosition(x, y, z + 0.3));
-
-			// cardMeshes[selectedIndices[1]].position = calcCardPosition(x, y);
-			// cardMeshes[selectedIndices[1]].position.z = z + 0.3;
-			// cardMeshes[selectedIndices[1]].rotation.z = Math.PI / 16 *
-			// (Math.random() -
-			// 0.5);
-			cards[selectedIndices[1]] = -1;
-
-			stack += 1;
-		} else {
-			hideCard(cardMeshes[selectedIndices[0]]);
-			hideCard(cardMeshes[selectedIndices[1]]);
-		}
 	}
-
 }
 
 function showCard(cardMesh) {
@@ -269,8 +311,16 @@ function stackCard(cardMesh, to) {
 	tween.start();
 }
 
+function onDocumentMouseMove(event) {
+	mouseX = (event.clientX - windowWidth / 2) / (windowWidth / 2);
+	mouseY = (event.clientY - windowHeight / 2) / (windowHeight / 2);
+}
+
 function onWindowResize() {
-	camera.aspect = window.innerWidth / window.innerHeight;
+	windowWidth = window.innerWidth;
+	windowHeight = window.innerHeight;
+
+	camera.aspect = windowWidth / windowHeight;
 	camera.updateProjectionMatrix();
 
 	renderer.setSize(window.innerWidth, window.innerHeight);
