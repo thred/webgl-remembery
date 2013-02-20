@@ -1,3 +1,22 @@
+const
+fov = 50;
+
+const
+boardWidth = 6;
+const
+boardHeight = 4;
+
+const
+cardSize = 8;
+const
+cardHeight = 0.4;
+const
+cardSpacing = 2;
+const
+totalWidth = boardWidth * (cardSize + cardSpacing);
+const
+totalHeight = boardHeight * (cardSize + cardSpacing);
+
 var container;
 var scene;
 var camera;
@@ -10,8 +29,6 @@ var cardBottomMaterial;
 var cardGeometry;
 var cardMeshes = [];
 
-var boardWidth = 8;
-var boardHeight = 5;
 var cards = [];
 var state = 0;
 var selectedIndices = [];
@@ -21,8 +38,6 @@ var mouseX = 0;
 var mouseY = 0;
 var windowWidth = 0;
 var windowHeight = 0;
-
-var cardHeight = 0.3;
 
 init();
 animate();
@@ -63,28 +78,36 @@ function initCards() {
 }
 
 function initCamera() {
-	camera = new THREE.PerspectiveCamera(70, window.innerWidth
+	camera = new THREE.PerspectiveCamera(fov, window.innerWidth
 			/ window.innerHeight, 1, 1000);
-	camera.position.x = 0;
-	camera.position.y = -15;
-	camera.position.z = 35;
-	// camera.rotation.x = Math.PI / 12;
 
-	camera.lookAt(new THREE.Vector3(0, -5, 0));
+	camera.position.x = 0;
+	camera.position.y = -(totalHeight / 2);
+	camera.position.z = (totalHeight / 2) * (1 / Math.tan(Math.PI * fov / 360));
+
+	camera.lookAt(new THREE.Vector3(0, -(totalHeight / 16), 0));
 
 	scene.add(camera);
 }
 
 function initLights() {
-	scene.add(new THREE.AmbientLight(0x404040));
+	scene.add(new THREE.AmbientLight(0x222222));
 
-	var light = new THREE.DirectionalLight(0xffffff, 1);
-	light.position.set(-0.5, 0.5, 0.5).normalize();
+	var light = new THREE.DirectionalLight(0xfffff0, 0.5);
+	light.position.set(0.5, -1, 1).normalize();
 	scene.add(light);
+
+	light = new THREE.DirectionalLight(0xfffff0, 1.0);
+	light.position.set(-0.5, -1, 1).normalize();
+
+	scene.add(light);
+
 }
 
 function initMaterials() {
 	var cardBottomTexture = THREE.ImageUtils.loadTexture('asset/cardback.png');
+
+	cardBottomTexture.minFilter = cardBottomTexture.magFilter = THREE.LinearFilter;
 
 	cardBottomMaterial = new THREE.MeshLambertMaterial({
 		color : 0x000080,
@@ -99,9 +122,14 @@ function initMaterials() {
 	});
 
 	for ( var i = 0; i < boardWidth * boardHeight / 2; i += 1) {
+		var cardTopTexture = THREE.ImageUtils.loadTexture('asset/memory' + i
+				+ ".jpg")
+
+		cardTopTexture.minFilter = cardTopTexture.magFilter = THREE.LinearFilter;
+
 		cardTopMaterials.push(new THREE.MeshLambertMaterial({
 			color : 0xffffff,
-			map : THREE.ImageUtils.loadTexture('asset/memory' + i + ".jpg")
+			map : cardTopTexture
 		}));
 	}
 }
@@ -114,8 +142,8 @@ function initScene() {
 }
 
 function initTable() {
-	var width = (boardWidth + 2.5) * 9 - 1;
-	var height = (boardHeight + 0.5) * 9 - 1;
+	var width = totalWidth + (cardSize + cardSpacing) * 3;
+	var height = totalHeight + (cardSize + cardSpacing);
 	var texture = THREE.ImageUtils.loadTexture('asset/background.png');
 	var material = new THREE.MeshLambertMaterial({
 		color : 0x80ff80,
@@ -135,7 +163,8 @@ function initTable() {
 }
 
 function initGeometries() {
-	cardGeometry = new THREE.CubeGeometry(8, 8, cardHeight, 1, 1, 1);
+	cardGeometry = new THREE.CubeGeometry(cardSize, cardSize, cardHeight, 1, 1,
+			1);
 }
 
 function initMeshes() {
@@ -154,26 +183,36 @@ function initMeshes() {
 }
 
 function calcCardPosition(x, y, z) {
-	var ox = (-boardWidth * 9 - 1) / 2 + 5;
-	var oy = (-boardHeight * 9 - 1) / 2 + 5;
+	var ox = -totalWidth / 2 + (cardSize + cardSpacing) / 2;
+	var oy = -totalHeight / 2 + (cardSize + cardSpacing) / 2;
 
-	return new THREE.Vector3(ox + x * 9, oy + y * 9, z);
+	return new THREE.Vector3(ox + x * (cardSize + cardSpacing), oy + y
+			* (cardSize + cardSpacing), z);
 }
 
 function createCard(index) {
 	var materials = [ cardSideMaterial, cardSideMaterial, cardSideMaterial,
 			cardSideMaterial, cardBottomMaterial,
 			cardTopMaterials[cards[index]] ];
-	var card = new THREE.Mesh(cardGeometry, new THREE.MeshFaceMaterial(
+	var mesh = new THREE.Mesh(cardGeometry, new THREE.MeshFaceMaterial(
 			materials));
 
-	card.index = index;
+	mesh.index = index;
 
-	return card;
+	return mesh;
 }
 
 function initRenderer() {
-	renderer = new THREE.WebGLRenderer();
+	if (Detector.webgl) {
+		renderer = new THREE.WebGLRenderer({
+			antialias : true,
+			preserveDrawingBuffer : true
+		});
+	} else {
+		Detector.addGetWebGLMessage();
+		return;
+	}
+
 	renderer.setSize(window.innerWidth, window.innerHeight);
 
 	document.body.appendChild(renderer.domElement);
@@ -181,10 +220,10 @@ function initRenderer() {
 
 function animate() {
 
-	camera.position.x = mouseX * 5;
-	camera.position.y = -18 - mouseY * 5;
+	// camera.position.x = mouseX * 5;
+	// camera.position.y = -18 - mouseY * 5;
 
-	camera.lookAt(new THREE.Vector3(mouseX * 5, -5, 0));
+	// camera.lookAt(new THREE.Vector3(mouseX * 5, -5, 0));
 	// camera.rotation.z = Math.PI / 16 * -mouseX;
 
 	requestAnimationFrame(animate);
@@ -195,7 +234,28 @@ function animate() {
 function onDocumentMouseDown(event) {
 	event.preventDefault();
 
-	if (state >= 2) {
+	if (state < 2) {
+		var vector = new THREE.Vector3(
+				(event.clientX / window.innerWidth) * 2 - 1,
+				-(event.clientY / window.innerHeight) * 2 + 1, 0.5);
+		projector.unprojectVector(vector, camera);
+
+		var raycaster = new THREE.Raycaster(camera.position, vector.sub(
+				camera.position).normalize());
+		var intersects = raycaster.intersectObjects(cardMeshes);
+
+		if ((intersects.length > 0) && (intersects[0])) {
+			var cardMesh = intersects[0].object;
+
+			if ((state == 0) || (selectedIndices[0] != cardMesh.index)) {
+				if (cards[cardMesh.index] >= 0) {
+					showCard(cardMesh);
+					selectedIndices[state] = cardMesh.index;
+					state += 1;
+				}
+			}
+		}
+	} else {
 		state = 0;
 
 		if (cards[selectedIndices[0]] == cards[selectedIndices[1]]) {
@@ -222,29 +282,6 @@ function onDocumentMouseDown(event) {
 			hideCard(cardMeshes[selectedIndices[1]]);
 		}
 	}
-
-	if (state < 2) {
-		var vector = new THREE.Vector3(
-				(event.clientX / window.innerWidth) * 2 - 1,
-				-(event.clientY / window.innerHeight) * 2 + 1, 0.5);
-		projector.unprojectVector(vector, camera);
-
-		var raycaster = new THREE.Raycaster(camera.position, vector.sub(
-				camera.position).normalize());
-		var intersects = raycaster.intersectObjects(cardMeshes);
-
-		if ((intersects.length > 0) && (intersects[0])) {
-			var cardMesh = intersects[0].object;
-
-			if ((state == 0) || (selectedIndices[0] != cardMesh.index)) {
-				if (cards[cardMesh.index] >= 0) {
-					showCard(cardMesh);
-					selectedIndices[state] = cardMesh.index;
-					state += 1;
-				}
-			}
-		}
-	}
 }
 
 function showCard(cardMesh) {
@@ -261,17 +298,20 @@ function rotateCard(cardMesh, fromY, toY) {
 	}
 
 	var from = {
-		y : fromY
+		y : fromY,
+
 	};
 	var to = {
-		y : toY
+		y : toY,
 	};
 
 	var tween = new TWEEN.Tween(from).to(to, 200);
 
 	tween.onUpdate(function() {
 		cardMesh.rotation.y = from.y;
-		cardMesh.position.z = Math.sin(from.y) * 5;
+
+		cardMesh.position.z = Math.abs(Math.sin(from.y))
+				* ((cardSize + cardSpacing) / 2);
 	});
 	tween.onComplete(function() {
 		cardMesh.tween = null;
