@@ -2,7 +2,7 @@ const
 fov = 50;
 
 const
-boardWidth = 6;
+boardWidth = 7;
 const
 boardHeight = 4;
 
@@ -110,12 +110,12 @@ function initMaterials() {
 	cardBottomTexture.minFilter = cardBottomTexture.magFilter = THREE.LinearFilter;
 
 	cardBottomMaterial = new THREE.MeshLambertMaterial({
-		color : 0x000080,
+		color : 0xffffff,
 		map : cardBottomTexture
 	});
 
 	cardBottomTexture.wrapS = cardBottomTexture.wrapT = THREE.RepeatWrapping;
-	cardBottomTexture.repeat.set(4, 4);
+	cardBottomTexture.repeat.set(2, 2);
 
 	cardSideMaterial = new THREE.MeshLambertMaterial({
 		color : 0x808080
@@ -146,7 +146,7 @@ function initTable() {
 	var height = totalHeight + (cardSize + cardSpacing);
 	var texture = THREE.ImageUtils.loadTexture('asset/background.png');
 	var material = new THREE.MeshLambertMaterial({
-		color : 0x80ff80,
+		color : 0xffffff,
 		map : texture
 	});
 
@@ -343,8 +343,8 @@ function stackCard(cardMesh, to) {
 	tween.onUpdate(function() {
 		cardMesh.position.x = from.posX;
 		cardMesh.position.y = from.posY;
-		cardMesh.position.z = from.posZ + Math.sin(from.fact) * 8;
-		cardMesh.rotation.z = from.rotZ;
+		cardMesh.position.z = from.posZ + Math.sin(from.fact) * cardSize * 2;
+		cardMesh.rotation.z = from.rotZ * 2;
 	});
 	tween.easing(TWEEN.Easing.Sinusoidal.In);
 
