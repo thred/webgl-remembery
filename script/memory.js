@@ -2,9 +2,9 @@ const
 fov = 50;
 
 const
-boardWidth = 7;
+boardWidth = 8;
 const
-boardHeight = 4;
+boardHeight = 5;
 
 const
 cardSize = 8;
@@ -52,12 +52,13 @@ function init() {
 
 	initCamera();
 	initLights();
-	initMaterials();
-	initScene();
+	initTable();
 
 	projector = new THREE.Projector();
 
 	initRenderer();
+
+	initScene();
 
 	document.addEventListener('mousedown', onDocumentMouseDown, false);
 	document.addEventListener('mousemove', onDocumentMouseMove, false);
@@ -81,11 +82,16 @@ function initCamera() {
 	camera = new THREE.PerspectiveCamera(fov, window.innerWidth
 			/ window.innerHeight, 1, 1000);
 
-	camera.position.x = 0;
-	camera.position.y = -(totalHeight / 2);
-	camera.position.z = (totalHeight / 2) * (1 / Math.tan(Math.PI * fov / 360));
+	var ratio = (totalWidth / totalHeight)
+			/ (window.innerWidth / window.innerHeight);
+	var dist = (totalHeight * Math.max(1, ratio) / 2)
+			* (1 / Math.tan(Math.PI * fov / 360));
 
-	camera.lookAt(new THREE.Vector3(0, -(totalHeight / 16), 0));
+	camera.position.x = 0;
+	camera.position.y = -totalHeight / 2;
+	camera.position.z = dist;
+
+	camera.lookAt(new THREE.Vector3(0, -totalHeight / 16, 0));
 
 	scene.add(camera);
 }
@@ -104,7 +110,49 @@ function initLights() {
 
 }
 
-function initMaterials() {
+function initTable() {
+	var width = totalWidth + (cardSize + cardSpacing) * 3;
+	var height = totalHeight + (cardSize + cardSpacing);
+	var texture = THREE.ImageUtils.loadTexture('asset/background.png');
+	var material = new THREE.MeshLambertMaterial({
+		color : 0xffffff,
+		map : texture
+	});
+
+	texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+	texture.repeat.set(width / 6, height / 6);
+	texture.offset.set(1.25, 1.25)
+
+	var geometry = new THREE.PlaneGeometry(width, height, 1, 1);
+	var mesh = new THREE.Mesh(geometry, material);
+
+	mesh.position.z = -cardHeight / 2;
+
+	scene.add(mesh);
+}
+
+function initRenderer() {
+	if (Detector.webgl) {
+		renderer = new THREE.WebGLRenderer({
+			antialias : true,
+			preserveDrawingBuffer : true
+		});
+	} else {
+		Detector.addGetWebGLMessage();
+		return;
+	}
+
+	renderer.setSize(window.innerWidth, window.innerHeight);
+
+	document.body.appendChild(renderer.domElement);
+}
+
+function initScene() {
+	initCardMaterials();
+	initCardMeshes();
+}
+
+function initCardMaterials() {
 	var cardBottomTexture = THREE.ImageUtils.loadTexture('asset/cardback.png');
 
 	cardBottomTexture.minFilter = cardBottomTexture.magFilter = THREE.LinearFilter;
@@ -134,52 +182,46 @@ function initMaterials() {
 	}
 }
 
-function initScene() {
-	initTable();
-
-	initGeometries();
-	initMeshes();
-}
-
-function initTable() {
-	var width = totalWidth + (cardSize + cardSpacing) * 3;
-	var height = totalHeight + (cardSize + cardSpacing);
-	var texture = THREE.ImageUtils.loadTexture('asset/background.png');
-	var material = new THREE.MeshLambertMaterial({
-		color : 0xffffff,
-		map : texture
-	});
-
-	texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-	texture.repeat.set(width / 5, height / 5);
-	texture.offset.set(1.25, 1.25)
-
-	var geometry = new THREE.PlaneGeometry(width, height, 1, 1);
-	var mesh = new THREE.Mesh(geometry, material);
-
-	mesh.position.z = -cardHeight / 2;
-
-	scene.add(mesh);
-}
-
-function initGeometries() {
+function initCardMeshes() {
 	cardGeometry = new THREE.CubeGeometry(cardSize, cardSize, cardHeight, 1, 1,
 			1);
-}
-
-function initMeshes() {
 	for ( var y = 0; y < boardHeight; y++) {
 		for ( var x = 0; x < boardWidth; x++) {
-			card = createCard(x + y * boardWidth);
-
-			card.position = calcCardPosition(x, y, 0);
-			card.rotation.z = Math.PI / 16 * (Math.random() - 0.5);
-
-			scene.add(card);
-
-			cardMeshes.push(card);
+			addCardMesh(x, y);
 		}
 	}
+}
+
+function addCardMesh(x, y) {
+	var cardMesh = createCardMesh(x + y * boardWidth)
+	var sourcePosition = new THREE.Vector3(0, -totalHeight, cardSize * 2);
+	var from = {
+		x : sourcePosition.x,
+		y : sourcePosition.y,
+		z : sourcePosition.z,
+		r : Math.PI * 2
+	};
+	var targetPosition = calcCardPosition(x, y, 0);
+	var to = {
+		x : targetPosition.x,
+		y : targetPosition.y,
+		z : targetPosition.z,
+		r : Math.PI / 8 * (Math.random() - 0.5)
+	};
+
+	var tween = new TWEEN.Tween(from).to(to, 400);
+
+	tween.onUpdate(function() {
+		cardMesh.position.x = from.x;
+		cardMesh.position.y = from.y;
+		cardMesh.position.z = from.z;
+		cardMesh.rotation.z = from.r;
+	});
+
+	cardMesh.position = sourcePosition;
+	scene.add(cardMesh);
+	tween.start((x + (boardHeight - y) * boardWidth) * 100);
+	cardMeshes.push(cardMesh);
 }
 
 function calcCardPosition(x, y, z) {
@@ -190,7 +232,7 @@ function calcCardPosition(x, y, z) {
 			* (cardSize + cardSpacing), z);
 }
 
-function createCard(index) {
+function createCardMesh(index) {
 	var materials = [ cardSideMaterial, cardSideMaterial, cardSideMaterial,
 			cardSideMaterial, cardBottomMaterial,
 			cardTopMaterials[cards[index]] ];
@@ -200,22 +242,6 @@ function createCard(index) {
 	mesh.index = index;
 
 	return mesh;
-}
-
-function initRenderer() {
-	if (Detector.webgl) {
-		renderer = new THREE.WebGLRenderer({
-			antialias : true,
-			preserveDrawingBuffer : true
-		});
-	} else {
-		Detector.addGetWebGLMessage();
-		return;
-	}
-
-	renderer.setSize(window.innerWidth, window.innerHeight);
-
-	document.body.appendChild(renderer.domElement);
 }
 
 function animate() {
