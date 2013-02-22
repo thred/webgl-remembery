@@ -29,7 +29,7 @@ var cardBottomMaterial;
 var cardGeometry;
 var cardMeshes = [];
 
-var cards = [];
+var cardDatas = [];
 var state = 0;
 var selectedIndices = [];
 var stack = 0;
@@ -48,7 +48,7 @@ function init() {
 
 	scene = new THREE.Scene();
 
-	initCards();
+	initCardDatas();
 
 	initCamera();
 	initLights();
@@ -65,16 +65,16 @@ function init() {
 	window.addEventListener('resize', onWindowResize, false);
 }
 
-function initCards() {
+function initCardDatas() {
 	for ( var i = 0; i < boardWidth * boardHeight; i += 2) {
-		cards[i] = cards[i + 1] = Math.floor(i / 2);
+		cardDatas[i] = cardDatas[i + 1] = Math.floor(i / 2);
 	}
 
 	for ( var i = 0; i < boardWidth * boardHeight; i++) {
 		var j = Math.floor(Math.random() * boardWidth * boardHeight);
-		var tmp = cards[i];
-		cards[i] = cards[j];
-		cards[j] = tmp;
+		var tmp = cardDatas[i];
+		cardDatas[i] = cardDatas[j];
+		cardDatas[j] = tmp;
 	}
 }
 
@@ -82,16 +82,19 @@ function initCamera() {
 	camera = new THREE.PerspectiveCamera(fov, window.innerWidth
 			/ window.innerHeight, 1, 1000);
 
-	var ratio = (totalWidth / totalHeight)
-			/ (window.innerWidth / window.innerHeight);
-	var dist = (totalHeight * Math.max(1, ratio) / 2)
+	var width = totalWidth;
+	var height = totalHeight;
+	var ratio = (width / height) / (window.innerWidth / window.innerHeight);
+	var dist = (height * Math.max(1, ratio) / 2)
 			* (1 / Math.tan(Math.PI * fov / 360));
 
-	camera.position.x = 0;
-	camera.position.y = -totalHeight / 2;
-	camera.position.z = dist;
+	var v = new THREE.Vector3(0, -0.6, 1.2).normalize();//.multiply(dist);
+	
+	camera.position.x = v.x*dist;
+	camera.position.y = v.y*dist;
+	camera.position.z = v.z*dist;
 
-	camera.lookAt(new THREE.Vector3(0, -totalHeight / 16, 0));
+	camera.lookAt(new THREE.Vector3(0, -height / 16, 0));
 
 	scene.add(camera);
 }
@@ -107,12 +110,11 @@ function initLights() {
 	light.position.set(-0.5, -1, 1).normalize();
 
 	scene.add(light);
-
 }
 
 function initTable() {
 	var width = totalWidth + (cardSize + cardSpacing) * 3;
-	var height = totalHeight + (cardSize + cardSpacing);
+	var height = totalHeight + (cardSize + cardSpacing) * 3;
 	var texture = THREE.ImageUtils.loadTexture('asset/background.png');
 	var material = new THREE.MeshLambertMaterial({
 		color : 0xffffff,
@@ -193,49 +195,51 @@ function initCardMeshes() {
 }
 
 function addCardMesh(x, y) {
-	var cardMesh = createCardMesh(x + y * boardWidth)
-	var sourcePosition = new THREE.Vector3(0, -totalHeight, cardSize * 2);
+	var index = x + y * boardWidth
+	var cardMesh = createCardMesh(index)
 	var from = {
-		x : sourcePosition.x,
-		y : sourcePosition.y,
-		z : sourcePosition.z,
-		r : Math.PI * 2
+		x : 0,
+		y : -(totalHeight / 2 + 1) - (cardSize + cardSpacing) / 2,
+		z : ((boardWidth * boardHeight) - index) * cardHeight,
+		r : Math.PI / 8 * (Math.random() - 0.5),
+		h : 0
 	};
 	var targetPosition = calcCardPosition(x, y, 0);
 	var to = {
 		x : targetPosition.x,
 		y : targetPosition.y,
 		z : targetPosition.z,
-		r : Math.PI / 8 * (Math.random() - 0.5)
+		r : from.r + 2 * Math.PI,
+		h : Math.PI
 	};
 
 	var tween = new TWEEN.Tween(from).to(to, 400);
-
-	tween.onUpdate(function() {
+	var onUpdate = function() {
 		cardMesh.position.x = from.x;
 		cardMesh.position.y = from.y;
-		cardMesh.position.z = from.z;
+		cardMesh.position.z = from.z + Math.sin(from.h) * cardSize;
 		cardMesh.rotation.z = from.r;
-	});
-
-	cardMesh.position = sourcePosition;
+	};
+	
+	tween.onUpdate(onUpdate);
+	onUpdate();
 	scene.add(cardMesh);
-	tween.start((x + (boardHeight - y) * boardWidth) * 100);
+	tween.start(index * 100);
 	cardMeshes.push(cardMesh);
 }
 
 function calcCardPosition(x, y, z) {
 	var ox = -totalWidth / 2 + (cardSize + cardSpacing) / 2;
-	var oy = -totalHeight / 2 + (cardSize + cardSpacing) / 2;
+	var oy = totalHeight / 2 - (cardSize + cardSpacing) / 2;
 
-	return new THREE.Vector3(ox + x * (cardSize + cardSpacing), oy + y
+	return new THREE.Vector3(ox + x * (cardSize + cardSpacing), oy - y
 			* (cardSize + cardSpacing), z);
 }
 
 function createCardMesh(index) {
 	var materials = [ cardSideMaterial, cardSideMaterial, cardSideMaterial,
 			cardSideMaterial, cardBottomMaterial,
-			cardTopMaterials[cards[index]] ];
+			cardTopMaterials[cardDatas[index]] ];
 	var mesh = new THREE.Mesh(cardGeometry, new THREE.MeshFaceMaterial(
 			materials));
 
@@ -274,7 +278,7 @@ function onDocumentMouseDown(event) {
 			var cardMesh = intersects[0].object;
 
 			if ((state == 0) || (selectedIndices[0] != cardMesh.index)) {
-				if (cards[cardMesh.index] >= 0) {
+				if (cardDatas[cardMesh.index] >= 0) {
 					showCard(cardMesh);
 					selectedIndices[state] = cardMesh.index;
 					state += 1;
@@ -284,7 +288,7 @@ function onDocumentMouseDown(event) {
 	} else {
 		state = 0;
 
-		if (cards[selectedIndices[0]] == cards[selectedIndices[1]]) {
+		if (cardDatas[selectedIndices[0]] == cardDatas[selectedIndices[1]]) {
 			var x = -1;
 			var y = boardHeight - 2;
 			var z = stack * (cardHeight * 2);
@@ -296,11 +300,11 @@ function onDocumentMouseDown(event) {
 			}
 
 			stackCard(cardMeshes[selectedIndices[0]], calcCardPosition(x, y, z));
-			cards[selectedIndices[0]] = -1;
+			cardDatas[selectedIndices[0]] = -1;
 
 			stackCard(cardMeshes[selectedIndices[1]], calcCardPosition(x, y, z
 					+ cardHeight));
-			cards[selectedIndices[1]] = -1;
+			cardDatas[selectedIndices[1]] = -1;
 
 			stack += 1;
 		} else {
