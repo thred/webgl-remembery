@@ -86,15 +86,20 @@ function initCamera() {
 	var height = totalHeight;
 	var ratio = (width / height) / (window.innerWidth / window.innerHeight);
 	var dist = (height * Math.max(1, ratio) / 2)
-			* (1 / Math.tan(Math.PI * fov / 360));
+			* (1 / Math.tan(Math.PI * fov / 360)) * 1.2;
 
 	var v = new THREE.Vector3(0, -0.6, 1.2).normalize();//.multiply(dist);
+	var from = new THREE.Vector3(0, -2*dist, 0);
+	var to = new THREE.Vector3(v.x*dist, v.y*dist, v.z*dist);
+	var tween = new TWEEN.Tween(from).to(to, boardWidth * boardHeight * 100);
+	var onUpdate = function() {
+		camera.position = from;
+		camera.lookAt(new THREE.Vector3(0, -height / 16, 0));
+	};
 	
-	camera.position.x = v.x*dist;
-	camera.position.y = v.y*dist;
-	camera.position.z = v.z*dist;
-
-	camera.lookAt(new THREE.Vector3(0, -height / 16, 0));
+	tween.onUpdate(onUpdate);
+	onUpdate();
+	tween.start();
 
 	scene.add(camera);
 }
@@ -290,7 +295,7 @@ function onDocumentMouseDown(event) {
 
 		if (cardDatas[selectedIndices[0]] == cardDatas[selectedIndices[1]]) {
 			var x = -1;
-			var y = boardHeight - 2;
+			var y = 1;
 			var z = stack * (cardHeight * 2);
 
 			if (stack >= boardWidth * boardHeight / 4) {
