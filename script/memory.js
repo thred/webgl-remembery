@@ -1,68 +1,350 @@
-const
-fov = 50;
+var Memory = Memory || {
+	SPEED : 1,
 
-const
-boardWidth = 8;
-const
-boardHeight = 5;
+	STATE_NONE : 0,
+	STATE_LOAD : 1,
+	STATE_MENU : 2,
+	STATE_GAME : 3,
 
-const
-cardSize = 8;
-const
-cardHeight = 0.4;
-const
-cardSpacing = 2;
-const
-totalWidth = boardWidth * (cardSize + cardSpacing);
-const
-totalHeight = boardHeight * (cardSize + cardSpacing);
+	state : 0,
+	nextState : 0,
 
-var container;
-var scene;
-var camera;
-var projector;
-var renderer;
+	fov : 50,
 
-var cardTopMaterials = [];
-var cardSideMaterial;
-var cardBottomMaterial;
-var cardGeometry;
-var cardMeshes = [];
+	clickableMeshes : [],
 
-var cardDatas = [];
-var state = 0;
-var selectedIndices = [];
-var stack = 0;
+	projector : new THREE.Projector()
 
-var mouseX = 0;
-var mouseY = 0;
-var windowWidth = 0;
-var windowHeight = 0;
+};
 
-init();
-animate();
+//var fov = 50;
+//const
+//boardWidth = 8;
+//const
+//boardHeight = 5;
+//
+//const
+//cardSize = 8;
+//const
+//cardHeight = 0.4;
+//const
+//cardSpacing = 2;
+//const
+//totalWidth = boardWidth * (cardSize + cardSpacing);
+//const
+//totalHeight = boardHeight * (cardSize + cardSpacing);
+//
+//var container;
+//var projector;
+//var renderer;
+//
+//var cardTopMaterials = [];
+//var cardSideMaterial;
+//var cardBottomMaterial;
+//var cardGeometry;
+//var cardMeshes = [];
+//
+//var cardDatas = [];
+//var state = 0;
+//var selectedIndices = [];
+//var stack = 0;
+//
+//var mouseX = 0;
+//var mouseY = 0;
+//var windowWidth = 0;
+//var windowHeight = 0;
 
-function init() {
-	windowWidth = window.innerWidth;
-	windowHeight = window.innerHeight;
+Memory.init = function() {
+	Memory.windowSize = {
+		width : window.innerWidth,
+		height : window.innerHeight
+	}
 
-	scene = new THREE.Scene();
+	Memory.scene = new THREE.Scene();
 
-	initCardDatas();
+	Memory.initLight();
+	Memory.initCamera();
+	Memory.initRenderer();
 
-	initCamera();
-	initLights();
-	initTable();
+	document.addEventListener('mousedown', Memory.onDocumentMouseDown, false);
+	document.addEventListener('mousemove', Memory.onDocumentMouseMove, false);
+	window.addEventListener('resize', Memory.onWindowResize, false);
 
-	projector = new THREE.Projector();
+	//
+	// // Memory.moveCamera();
+	//
+	// initCardDatas();
+	//
+	// // initCamera();
+	// initTable();
+	//
+	// projector = new THREE.Projector();
+	//
+	// initRenderer();
+	//
+	// initScene();
+	//
+	// document.addEventListener('mousedown', onDocumentMouseDown, false);
+	// document.addEventListener('mousemove', onDocumentMouseMove, false);
+	// window.addEventListener('resize', onWindowResize, false);
 
-	initRenderer();
+	Memory.toState(Memory.STATE_LOAD);
+}
 
-	initScene();
+Memory.initLight = function() {
+	Memory.scene.add(new THREE.AmbientLight(0x222222));
 
-	document.addEventListener('mousedown', onDocumentMouseDown, false);
-	document.addEventListener('mousemove', onDocumentMouseMove, false);
-	window.addEventListener('resize', onWindowResize, false);
+	var light = new THREE.DirectionalLight(0xfffff0, 0.5);
+	light.position.set(0.5, -1, 1).normalize();
+	Memory.scene.add(light);
+
+	light = new THREE.DirectionalLight(0xfffff0, 1.0);
+	light.position.set(-0.5, -1, 1).normalize();
+	Memory.scene.add(light);
+}
+
+Memory.initCamera = function() {
+	var camera = new THREE.PerspectiveCamera(Memory.fov, window.innerWidth / window.innerHeight, 1, 1000);
+
+	camera.position.set(0, 0, 10);
+
+	camera.lookingAt = new THREE.Vector3(0, 0, 0);
+	camera.lookAt(camera.lookingAt);
+
+	Memory.scene.add(Memory.camera = camera);
+}
+
+Memory.moveCamera = function() {
+	// var width = totalWidth;
+	// var height = totalHeight;
+	//	
+	// var ratio = (width / height) / (window.innerWidth / window.innerHeight);
+	//	
+	// var dist = (height * Math.max(1, ratio) / 2)
+	// * (1 / Math.tan(Math.PI * fov / 360)) * 1.2;
+	//	
+	// var v = new THREE.Vector3(0, -0.6, 1.2).normalize();
+	//
+	// var from = {
+	// positionX : Memory.camera.position.x,
+	// positionY : Memory.camera.position.y,
+	// positionZ : Memory.camera.position.z,
+	// }
+	//	
+	// var to = {
+	// positionX : v.x * dist,
+	// positionY : v.y * dist,
+	// positionZ : v.z * dist
+	// }
+	//
+	// var tween = new TWEEN.Tween(from).to(to, boardWidth * boardHeight *
+	// 100).onUpdate(function() {
+	// Memory.camera.position.x = from.positionX;
+	// Memory.camera.position.y = from.positionY;
+	// Memory.camera.position.z = from.positionZ;
+	// Memory.camera.lookAt(new THREE.Vector3(0, -height / 16, 0));
+	// });
+	//	
+	// tween.start();
+
+	Memory.tweenCameraTo(new THREE.Vector3(0, -0.6, 1.2), new THREE.Vector3(0, 0, 0), totalWidth, totalHeight,
+			boardWidth * boardHeight * 100).start();
+}
+
+Memory.tweenCameraTo = function(viewVector, lookAtVector, width, height, duration) {
+	var ratio = (width / height) / (window.innerWidth / window.innerHeight);
+
+	var dist = (height * Math.max(1, ratio) / 2) * (1 / Math.tan(Math.PI * Memory.fov / 360)) * 1.2;
+
+	viewVector = viewVector.setLength(dist);
+
+	return new TWEEN.Tween({
+		posX : Memory.camera.position.x,
+		posY : Memory.camera.position.y,
+		posZ : Memory.camera.position.z,
+		viewX : Memory.camera.lookingAt.x,
+		viewY : Memory.camera.lookingAt.y,
+		viewZ : Memory.camera.lookingAt.z
+	}).to({
+		posX : viewVector.x,
+		posY : viewVector.y,
+		posZ : viewVector.z,
+		viewX : lookAtVector.x,
+		viewY : lookAtVector.y,
+		viewZ : lookAtVector.z
+	}, duration * Memory.SPEED).onUpdate(function() {
+		Memory.camera.position.x = this.posX;
+		Memory.camera.position.y = this.posY;
+		Memory.camera.position.z = this.posZ;
+		Memory.camera.lookingAt = new THREE.Vector3(this.viewX, this.viewY, this.viewZ);
+		Memory.camera.lookAt(Memory.camera.lookingAt);
+	}).easing(TWEEN.Easing.Cubic.InOut);
+}
+
+Memory.initRenderer = function() {
+	if (Detector.webgl) {
+		var renderer = Memory.renderer = new THREE.WebGLRenderer({
+			antialias : true,
+			preserveDrawingBuffer : true
+		});
+
+		renderer.setSize(window.innerWidth, window.innerHeight);
+		document.body.appendChild(renderer.domElement);
+	} else {
+		Detector.addGetWebGLMessage();
+	}
+}
+
+Memory.addClickable = function(mesh, handler) {
+	mesh.onClick = handler;
+	Memory.clickableMeshes.push(mesh);
+}
+
+Memory.removeClickable = function(mesh) {
+	Memory.clickableMeshes.splice(Memory.clickableMeshes.indexOf(mesh), 1);
+	mesh.onClick = null;
+}
+
+Memory.setClick = function(handler) {
+	Memory.click = handler;
+}
+
+Memory.onDocumentMouseDown = function(event) {
+	event.preventDefault();
+
+	if (Memory.click) {
+		if (Memory.click()) {
+			return;
+		}
+	}
+
+	var vector = new THREE.Vector3((event.clientX / window.innerWidth) * 2 - 1,
+			-(event.clientY / window.innerHeight) * 2 + 1, 0.5);
+	Memory.projector.unprojectVector(vector, Memory.camera);
+
+	var raycaster = new THREE.Raycaster(Memory.camera.position, vector.sub(Memory.camera.position).normalize());
+	var intersects = raycaster.intersectObjects(Memory.clickableMeshes);
+
+	for ( var i = 0; i < intersects.length; i += 1) {
+		var mesh = intersects[i].object;
+
+		if (mesh.onClick(mesh)) {
+			return;
+		}
+	}
+}
+
+Memory.onDocumentMouseMove = function(event) {
+	Memory.mouse = {
+		x : (event.clientX - Memory.windowSize.width / 2) / (Memory.windowSize.width / 2),
+		y : (event.clientY - Memory.windowSize.height / 2) / (Memory.windowSize.height / 2)
+	}
+}
+
+Memory.onWindowResize = function() {
+	Memory.windowSize = {
+		width : window.innerWidth,
+		height : window.innerHeight
+	}
+
+	Memory.camera.aspect = Memory.windowSize.width / Memory.windowSize.height;
+	Memory.camera.updateProjectionMatrix();
+
+	Memory.renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+Memory.toState = function(state) {
+	Memory.nextState = state;
+}
+
+Memory.animate = function() {
+	if (Memory.nextState > Memory.STATE_NONE) {
+		Memory.state = Memory.nextState;
+		Memory.nextState = Memory.STATE_NONE;
+
+		switch (Memory.state) {
+		case Memory.STATE_LOAD:
+			Memory.load();
+			break;
+
+		case Memory.STATE_MENU:
+			Menu.activate();
+			break;
+
+		case Memory.STATE_GAME:
+			Game.activate();
+			break;
+		}
+	}
+
+	// Memory.dings.rotation.x += 0.01;
+	// camera.position.x = mouseX * 5;
+	// camera.position.y = -18 - mouseY * 5;
+
+	// camera.lookAt(new THREE.Vector3(mouseX * 5, -5, 0));
+	// camera.rotation.z = Math.PI / 16 * -mouseX;
+
+	requestAnimationFrame(Memory.animate);
+	Memory.renderer.render(Memory.scene, Memory.camera);
+	TWEEN.update();
+}
+
+Memory.load = function() {
+	Menu.load();
+	Game.load();
+
+	Memory.initTable();
+
+	Memory.toState(Memory.STATE_MENU);
+	//
+	// var cardBottomTexture =
+	// THREE.ImageUtils.loadTexture('asset/cardback.png');
+	//
+	// cardBottomTexture.minFilter = cardBottomTexture.magFilter =
+	// THREE.LinearFilter;
+	//
+	// cardBottomMaterial = new THREE.MeshLambertMaterial({
+	// color : 0xffffff,
+	// map : cardBottomTexture
+	// });
+	//
+	// cardBottomTexture.wrapS = cardBottomTexture.wrapT = THREE.RepeatWrapping;
+	// cardBottomTexture.repeat.set(2, 2);
+	//
+	// cardSideMaterial = new THREE.MeshLambertMaterial({
+	// color : 0x808080
+	// });
+	//
+	// for ( var i = 0; i < boardWidth * boardHeight / 2; i += 1) {
+	// var cardTopTexture = THREE.ImageUtils.loadTexture('asset/memory' + i +
+	// ".jpg")
+	//
+	// cardTopTexture.minFilter = cardTopTexture.magFilter = THREE.LinearFilter;
+	//
+	// cardTopMaterials.push(new THREE.MeshLambertMaterial({
+	// color : 0xffffff,
+	// map : cardTopTexture
+	// }));
+	// }
+}
+
+Memory.initTable = function() {
+//	var width = (Game.cardSize + Game.cardSpacing) * 12;
+//	var height = (Game.cardSize + Game.cardSpacing) * 8;
+//	var texture = THREE.ImageUtils.loadTexture('asset/table.png');
+//	var material = new THREE.MeshLambertMaterial({
+//		color : 0xffffff,
+//		map : texture
+//	});
+//
+//	texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+//	texture.repeat.set(width / 10, height / 10);
+//	texture.offset.set(1.25, 1.25)
+//
+//	var geometry = new THREE.PlaneGeometry(width, height, 1, 1);
+//	var mesh = new THREE.Mesh(geometry, material);
+//
+//	Memory.scene.add(mesh);
 }
 
 function initCardDatas() {
@@ -78,65 +360,31 @@ function initCardDatas() {
 	}
 }
 
-function initCamera() {
-	camera = new THREE.PerspectiveCamera(fov, window.innerWidth
-			/ window.innerHeight, 1, 1000);
-
-	var width = totalWidth;
-	var height = totalHeight;
-	var ratio = (width / height) / (window.innerWidth / window.innerHeight);
-	var dist = (height * Math.max(1, ratio) / 2)
-			* (1 / Math.tan(Math.PI * fov / 360)) * 1.2;
-
-	var v = new THREE.Vector3(0, -0.6, 1.2).normalize();//.multiply(dist);
-	var from = new THREE.Vector3(0, -2*dist, 0);
-	var to = new THREE.Vector3(v.x*dist, v.y*dist, v.z*dist);
-	var tween = new TWEEN.Tween(from).to(to, boardWidth * boardHeight * 100);
-	var onUpdate = function() {
-		camera.position = from;
-		camera.lookAt(new THREE.Vector3(0, -height / 16, 0));
-	};
-	
-	tween.onUpdate(onUpdate);
-	onUpdate();
-	tween.start();
-
-	scene.add(camera);
-}
-
-function initLights() {
-	scene.add(new THREE.AmbientLight(0x222222));
-
-	var light = new THREE.DirectionalLight(0xfffff0, 0.5);
-	light.position.set(0.5, -1, 1).normalize();
-	scene.add(light);
-
-	light = new THREE.DirectionalLight(0xfffff0, 1.0);
-	light.position.set(-0.5, -1, 1).normalize();
-
-	scene.add(light);
-}
-
-function initTable() {
-	var width = totalWidth + (cardSize + cardSpacing) * 3;
-	var height = totalHeight + (cardSize + cardSpacing) * 3;
-	var texture = THREE.ImageUtils.loadTexture('asset/background.png');
-	var material = new THREE.MeshLambertMaterial({
-		color : 0xffffff,
-		map : texture
-	});
-
-	texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-	texture.repeat.set(width / 6, height / 6);
-	texture.offset.set(1.25, 1.25)
-
-	var geometry = new THREE.PlaneGeometry(width, height, 1, 1);
-	var mesh = new THREE.Mesh(geometry, material);
-
-	mesh.position.z = -cardHeight / 2;
-
-	scene.add(mesh);
-}
+// function initCamera() {
+// camera = new THREE.PerspectiveCamera(fov, window.innerWidth
+// / window.innerHeight, 1, 1000);
+//
+// var width = totalWidth;
+// var height = totalHeight;
+// var ratio = (width / height) / (window.innerWidth / window.innerHeight);
+// var dist = (height * Math.max(1, ratio) / 2)
+// * (1 / Math.tan(Math.PI * fov / 360)) * 1.2;
+//
+// var v = new THREE.Vector3(0, -0.6, 1.2).normalize();// .multiply(dist);
+// var from = new THREE.Vector3(0, -2 * dist, 0);
+// var to = new THREE.Vector3(v.x * dist, v.y * dist, v.z * dist);
+// var tween = new TWEEN.Tween(from).to(to, boardWidth * boardHeight * 100);
+// var onUpdate = function() {
+// camera.position = from;
+// camera.lookAt(new THREE.Vector3(0, -height / 16, 0));
+// };
+//
+// tween.onUpdate(onUpdate);
+// onUpdate();
+// tween.start();
+//
+// Memory.scene.add(camera);
+// }
 
 function initRenderer() {
 	if (Detector.webgl) {
@@ -155,43 +403,11 @@ function initRenderer() {
 }
 
 function initScene() {
-	initCardMaterials();
 	initCardMeshes();
 }
 
-function initCardMaterials() {
-	var cardBottomTexture = THREE.ImageUtils.loadTexture('asset/cardback.png');
-
-	cardBottomTexture.minFilter = cardBottomTexture.magFilter = THREE.LinearFilter;
-
-	cardBottomMaterial = new THREE.MeshLambertMaterial({
-		color : 0xffffff,
-		map : cardBottomTexture
-	});
-
-	cardBottomTexture.wrapS = cardBottomTexture.wrapT = THREE.RepeatWrapping;
-	cardBottomTexture.repeat.set(2, 2);
-
-	cardSideMaterial = new THREE.MeshLambertMaterial({
-		color : 0x808080
-	});
-
-	for ( var i = 0; i < boardWidth * boardHeight / 2; i += 1) {
-		var cardTopTexture = THREE.ImageUtils.loadTexture('asset/memory' + i
-				+ ".jpg")
-
-		cardTopTexture.minFilter = cardTopTexture.magFilter = THREE.LinearFilter;
-
-		cardTopMaterials.push(new THREE.MeshLambertMaterial({
-			color : 0xffffff,
-			map : cardTopTexture
-		}));
-	}
-}
-
 function initCardMeshes() {
-	cardGeometry = new THREE.CubeGeometry(cardSize, cardSize, cardHeight, 1, 1,
-			1);
+	cardGeometry = new THREE.CubeGeometry(cardSize, cardSize, cardHeight, 1, 1, 1);
 	for ( var y = 0; y < boardHeight; y++) {
 		for ( var x = 0; x < boardWidth; x++) {
 			addCardMesh(x, y);
@@ -218,17 +434,17 @@ function addCardMesh(x, y) {
 		h : Math.PI
 	};
 
-	var tween = new TWEEN.Tween(from).to(to, 400);
+	var tween = new TWEEN.Tween(from).to(to, 400 * Memory.SPEED);
 	var onUpdate = function() {
 		cardMesh.position.x = from.x;
 		cardMesh.position.y = from.y;
 		cardMesh.position.z = from.z + Math.sin(from.h) * cardSize;
 		cardMesh.rotation.z = from.r;
 	};
-	
+
 	tween.onUpdate(onUpdate);
 	onUpdate();
-	scene.add(cardMesh);
+	Memory.scene.add(cardMesh);
 	tween.start(index * 100);
 	cardMeshes.push(cardMesh);
 }
@@ -237,16 +453,13 @@ function calcCardPosition(x, y, z) {
 	var ox = -totalWidth / 2 + (cardSize + cardSpacing) / 2;
 	var oy = totalHeight / 2 - (cardSize + cardSpacing) / 2;
 
-	return new THREE.Vector3(ox + x * (cardSize + cardSpacing), oy - y
-			* (cardSize + cardSpacing), z);
+	return new THREE.Vector3(ox + x * (cardSize + cardSpacing), oy - y * (cardSize + cardSpacing), z);
 }
 
 function createCardMesh(index) {
-	var materials = [ cardSideMaterial, cardSideMaterial, cardSideMaterial,
-			cardSideMaterial, cardBottomMaterial,
+	var materials = [ cardSideMaterial, cardSideMaterial, cardSideMaterial, cardSideMaterial, cardBottomMaterial,
 			cardTopMaterials[cardDatas[index]] ];
-	var mesh = new THREE.Mesh(cardGeometry, new THREE.MeshFaceMaterial(
-			materials));
+	var mesh = new THREE.Mesh(cardGeometry, new THREE.MeshFaceMaterial(materials));
 
 	mesh.index = index;
 
@@ -254,7 +467,7 @@ function createCardMesh(index) {
 }
 
 function animate() {
-
+	// Memory.dings.rotation.x += 0.01;
 	// camera.position.x = mouseX * 5;
 	// camera.position.y = -18 - mouseY * 5;
 
@@ -262,7 +475,7 @@ function animate() {
 	// camera.rotation.z = Math.PI / 16 * -mouseX;
 
 	requestAnimationFrame(animate);
-	renderer.render(scene, camera);
+	Memory.renderer.render(Memory.scene, Memory.camera);
 	TWEEN.update();
 }
 
@@ -270,13 +483,11 @@ function onDocumentMouseDown(event) {
 	event.preventDefault();
 
 	if (state < 2) {
-		var vector = new THREE.Vector3(
-				(event.clientX / window.innerWidth) * 2 - 1,
+		var vector = new THREE.Vector3((event.clientX / window.innerWidth) * 2 - 1,
 				-(event.clientY / window.innerHeight) * 2 + 1, 0.5);
-		projector.unprojectVector(vector, camera);
+		projector.unprojectVector(vector, Memory.camera);
 
-		var raycaster = new THREE.Raycaster(camera.position, vector.sub(
-				camera.position).normalize());
+		var raycaster = new THREE.Raycaster(Memory.camera.position, vector.sub(Memory.camera.position).normalize());
 		var intersects = raycaster.intersectObjects(cardMeshes);
 
 		if ((intersects.length > 0) && (intersects[0])) {
@@ -300,15 +511,13 @@ function onDocumentMouseDown(event) {
 
 			if (stack >= boardWidth * boardHeight / 4) {
 				x = boardWidth;
-				z = (stack - Math.floor(boardWidth * boardHeight / 4))
-						* (cardHeight * 2);
+				z = (stack - Math.floor(boardWidth * boardHeight / 4)) * (cardHeight * 2);
 			}
 
 			stackCard(cardMeshes[selectedIndices[0]], calcCardPosition(x, y, z));
 			cardDatas[selectedIndices[0]] = -1;
 
-			stackCard(cardMeshes[selectedIndices[1]], calcCardPosition(x, y, z
-					+ cardHeight));
+			stackCard(cardMeshes[selectedIndices[1]], calcCardPosition(x, y, z + cardHeight));
 			cardDatas[selectedIndices[1]] = -1;
 
 			stack += 1;
@@ -340,13 +549,12 @@ function rotateCard(cardMesh, fromY, toY) {
 		y : toY,
 	};
 
-	var tween = new TWEEN.Tween(from).to(to, 200);
+	var tween = new TWEEN.Tween(from).to(to, 200 * Memory.SPEED);
 
 	tween.onUpdate(function() {
 		cardMesh.rotation.y = from.y;
 
-		cardMesh.position.z = Math.abs(Math.sin(from.y))
-				* ((cardSize + cardSpacing) / 2);
+		cardMesh.position.z = Math.abs(Math.sin(from.y)) * ((cardSize + cardSpacing) / 2);
 	});
 	tween.onComplete(function() {
 		cardMesh.tween = null;
@@ -373,7 +581,7 @@ function stackCard(cardMesh, to) {
 		fact : Math.PI
 	};
 
-	var tween = new TWEEN.Tween(from).to(to, 500);
+	var tween = new TWEEN.Tween(from).to(to, 500 * Memory.SPEED);
 
 	tween.onUpdate(function() {
 		cardMesh.position.x = from.posX;
@@ -386,17 +594,5 @@ function stackCard(cardMesh, to) {
 	tween.start();
 }
 
-function onDocumentMouseMove(event) {
-	mouseX = (event.clientX - windowWidth / 2) / (windowWidth / 2);
-	mouseY = (event.clientY - windowHeight / 2) / (windowHeight / 2);
-}
-
-function onWindowResize() {
-	windowWidth = window.innerWidth;
-	windowHeight = window.innerHeight;
-
-	camera.aspect = windowWidth / windowHeight;
-	camera.updateProjectionMatrix();
-
-	renderer.setSize(window.innerWidth, window.innerHeight);
-}
+Memory.init();
+Memory.animate();
