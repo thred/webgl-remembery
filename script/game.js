@@ -244,7 +244,7 @@ Game.cardCollectTween = function(mesh, position) {
 		mesh.position.z = this.posZ + Math.sin(this.fact) * Game.cardSize * 2;
 		mesh.rotation.z = this.rot;
 
-		Game.createSparkle(new THREE.Vector3(mesh.position.x, mesh.position.y, mesh.position.z));
+		Memory.createSparkle(mesh.position.clone());
 	});
 }
 
@@ -272,43 +272,6 @@ Game.createSparkleA = function(position) {
 	}).onComplete(function() {
 		Memory.scene.remove(particle);
 	}).start();
-}
-
-Game.createSparkle = function(position) {
-	var material = new THREE.MeshBasicMaterial({
-		map : Game.sparkleTexture,
-		transparent : true
-	});
-	var particle = new THREE.Mesh(new THREE.PlaneGeometry(2, 2, 1, 1), material);
-
-	particle.position = position;
-	particle.lookAt(Memory.camera.position);
-	Memory.scene.add(particle);
-
-	var dir = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
-	var length = Game.cardSize;
-
-	new TWEEN.Tween({
-		posX : position.x,
-		posY : position.y,
-		posZ : position.z,
-		scale : 5,
-		opacity : 1
-	}).to({
-		posX : position.x + dir.x * length,
-		posY : position.y + dir.y * length,
-		posZ : position.z + dir.z * length,
-		scale : 0,
-		opacity : 0
-	}, 2000).onUpdate(function() {
-		particle.position.x = this.posX;
-		particle.position.y = this.posY;
-		particle.position.z = this.posZ;
-		particle.scale.set(this.scale, this.scale, this.scale);
-		//material.opacity = this.opacity;
-	}).onComplete(function() {
-		Memory.scene.remove(particle);
-	}).easing(TWEEN.Easing.Cubic.Out).start();
 }
 
 Game.calcCardPosition = function(x, y) {
@@ -351,11 +314,6 @@ Game.load = function() {
 			Memory.scene.add(cardMesh);
 		}
 	}
-
-	Game.sparkleTexture = THREE.ImageUtils.loadTexture('asset/sparkle.png');
-	Game.sparkleMaterial = Util.createParticleMaterial('asset/sparkle.png');
-	Game.sparkleGeometry = new THREE.Geometry();
-	Game.sparkleGeometry.vertices.push(new THREE.Vector3(0, 0, 0));
 }
 
 Game.createCardGeometry = function() {

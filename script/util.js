@@ -19,13 +19,24 @@ Util.round = function(value, offset, to) {
 	return Math.round((value - offset) / to) * to + offset;
 }
 
+Util.rotateAroundWorldAxis = function(object, axis, radians) {
+	var rotationMatrix = new THREE.Matrix4();
+
+	rotationMatrix.makeRotationAxis(axis.normalize(), radians);
+	rotationMatrix.multiply(object.matrix); // pre-multiply
+	object.matrix = rotationMatrix;
+	object.rotation.setEulerFromRotationMatrix(object.matrix);
+}
+
 Util.createParticleMaterial = function(texture) {
 	var texture = THREE.ImageUtils.loadTexture(texture);
 	var material = new THREE.ParticleBasicMaterial({
 		size : 128,
-		sizeAttenuation : false,
+		sizeAttenuation : true,
 		map : texture,
+		blending : THREE.AdditiveBlending,
 		transparent : true
+
 	});
 
 	return material;
@@ -37,7 +48,7 @@ Util.createTexturedMaterial = function(texture, textureRepeat) {
 	texture.minFilter = texture.magFilter = THREE.LinearFilter;
 
 	var material = new THREE.MeshPhongMaterial({
-		map : texture,
+		map : texture
 	});
 
 	material.wrapS = texture.wrapT = THREE.RepeatWrapping;

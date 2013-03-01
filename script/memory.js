@@ -17,42 +17,42 @@ var Memory = Memory || {
 
 };
 
-//var fov = 50;
-//const
-//boardWidth = 8;
-//const
-//boardHeight = 5;
+// var fov = 50;
+// const
+// boardWidth = 8;
+// const
+// boardHeight = 5;
 //
-//const
-//cardSize = 8;
-//const
-//cardHeight = 0.4;
-//const
-//cardSpacing = 2;
-//const
-//totalWidth = boardWidth * (cardSize + cardSpacing);
-//const
-//totalHeight = boardHeight * (cardSize + cardSpacing);
+// const
+// cardSize = 8;
+// const
+// cardHeight = 0.4;
+// const
+// cardSpacing = 2;
+// const
+// totalWidth = boardWidth * (cardSize + cardSpacing);
+// const
+// totalHeight = boardHeight * (cardSize + cardSpacing);
 //
-//var container;
-//var projector;
-//var renderer;
+// var container;
+// var projector;
+// var renderer;
 //
-//var cardTopMaterials = [];
-//var cardSideMaterial;
-//var cardBottomMaterial;
-//var cardGeometry;
-//var cardMeshes = [];
+// var cardTopMaterials = [];
+// var cardSideMaterial;
+// var cardBottomMaterial;
+// var cardGeometry;
+// var cardMeshes = [];
 //
-//var cardDatas = [];
-//var state = 0;
-//var selectedIndices = [];
-//var stack = 0;
+// var cardDatas = [];
+// var state = 0;
+// var selectedIndices = [];
+// var stack = 0;
 //
-//var mouseX = 0;
-//var mouseY = 0;
-//var windowWidth = 0;
-//var windowHeight = 0;
+// var mouseX = 0;
+// var mouseY = 0;
+// var windowWidth = 0;
+// var windowHeight = 0;
 
 Memory.init = function() {
 	Memory.windowSize = {
@@ -293,9 +293,19 @@ Memory.load = function() {
 	Menu.load();
 	Game.load();
 
+	// Memory.sparkleMaterial =
+	// Util.createTexturedMaterial('asset/sparkle.png');
+	// Memory.sparkleMaterial.transparent = true;
+	// Memory.sparkleMaterial.blending = THREE.AdditiveBlending;
+	// Memory.sparkleGeometry = new THREE.PlaneGeometry(2, 2, 1, 1);
+	Memory.sparkleMaterial = Util.createParticleMaterial('asset/sparkle.png');
+	Memory.sparkleGeometry = new THREE.Geometry();
+	Memory.sparkleGeometry.vertices.push(new THREE.Vector3(0, 0, 0));
+
 	Memory.initTable();
 
 	Memory.toState(Memory.STATE_MENU);
+
 	//
 	// var cardBottomTexture =
 	// THREE.ImageUtils.loadTexture('asset/cardback.png');
@@ -328,23 +338,55 @@ Memory.load = function() {
 	// }
 }
 
+Memory.createSparkle = function(position) {
+
+	var particleSystem = new THREE.ParticleSystem(Memory.sparkleGeometry, Memory.sparkleMaterial.clone());
+
+	particleSystem.position = position.clone();
+
+	Memory.scene.add(particleSystem);
+
+	var direction = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
+	var length = 16;
+
+	new TWEEN.Tween({
+		posX : position.x,
+		posY : position.y,
+		posZ : position.z,
+		opacity : 1
+	}).to({
+		posX : position.x + direction.x * length,
+		posY : position.y + direction.y * length,
+		posZ : position.z + direction.z * length,
+		opacity : 0
+	}, 2000).onUpdate(function() {
+		particleSystem.position.x = this.posX;
+		particleSystem.position.y = this.posY;
+		particleSystem.position.z = this.posZ;
+		particleSystem.material.rotation = this.rotation;
+		particleSystem.material.opacity = this.opacity;
+	}).onComplete(function() {
+		Memory.scene.remove(particleSystem);
+	}).easing(TWEEN.Easing.Cubic.Out).start();
+}
+
 Memory.initTable = function() {
-//	var width = (Game.cardSize + Game.cardSpacing) * 12;
-//	var height = (Game.cardSize + Game.cardSpacing) * 8;
-//	var texture = THREE.ImageUtils.loadTexture('asset/table.png');
-//	var material = new THREE.MeshLambertMaterial({
-//		color : 0xffffff,
-//		map : texture
-//	});
-//
-//	texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-//	texture.repeat.set(width / 10, height / 10);
-//	texture.offset.set(1.25, 1.25)
-//
-//	var geometry = new THREE.PlaneGeometry(width, height, 1, 1);
-//	var mesh = new THREE.Mesh(geometry, material);
-//
-//	Memory.scene.add(mesh);
+	 var width = (Game.cardSize + Game.cardSpacing) * 12;
+	var height = (Game.cardSize + Game.cardSpacing) * 8;
+	var texture = THREE.ImageUtils.loadTexture('asset/table.png');
+	var material = new THREE.MeshLambertMaterial({
+		color : 0xffffff,
+		map : texture
+	});
+
+	texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+	texture.repeat.set(width / 10, height / 10);
+	texture.offset.set(1.25, 1.25)
+
+	var geometry = new THREE.PlaneGeometry(width, height, 1, 1);
+	var mesh = new THREE.Mesh(geometry, material);
+
+	Memory.scene.add(mesh);
 }
 
 function initCardDatas() {

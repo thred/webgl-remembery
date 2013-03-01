@@ -127,6 +127,7 @@ Menu.buttonHappy = function(index) {
 		mesh.position.y = this.posY;
 		mesh.position.z = this.posZ + Math.abs(Math.sin(this.fact)) * Menu.buttonSize;
 		mesh.rotation.x = this.fact * 6;
+		Memory.createSparkle(mesh.position.clone());
 	}).chain(new TWEEN.Tween({
 		posZ : mesh.position.z,
 		fact : 0
@@ -136,6 +137,7 @@ Menu.buttonHappy = function(index) {
 	}, 500 * Memory.SPEED).onUpdate(function() {
 		mesh.position.z = this.posZ + Math.abs(Math.sin(this.fact)) * Menu.buttonSize * 5;
 		mesh.rotation.x = this.fact * 12;
+		Memory.createSparkle(mesh.position.clone());
 	}).onComplete(function() {
 		mesh.visible = false;
 		Memory.toState(Memory.STATE_GAME);
