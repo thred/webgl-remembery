@@ -19,7 +19,10 @@ var Game = Game || {
 	cardDatas : [],
 	selectedIndices : [ -1, -1 ],
 	leftStackSize : 0,
-	rightStackSize : 0
+	rightStackSize : 0,
+
+	points : 0,
+	pointsPerCount : [ 100, 100, 100, 50, 25, 20, 15, 10, 5 ]
 }
 
 Game.activate = function() {
@@ -46,6 +49,37 @@ Game.activate = function() {
 	Memory.setClick(Game.onClick);
 }
 
+Game.initCardDatas = function() {
+	var cardIndices = [];
+
+	for ( var i = 0; i < Game.numberOfCards; i += 1) {
+		cardIndices.push(i);
+	}
+
+	Util.shuffle(cardIndices);
+
+	Game.cardDatas = [];
+
+	for ( var i = 0; i < Game.boardSize.width * Game.boardSize.height; i += 2) {
+		var cardIndex = cardIndices[parseInt(i / 2)];
+
+		Game.cardDatas.push({
+			cardIndex : cardIndex,
+			meshIndex : cardIndex * 2,
+			shown : false,
+			count : 0
+		});
+		Game.cardDatas.push({
+			cardIndex : cardIndex,
+			meshIndex : cardIndex * 2 + 1,
+			shown : false,
+			count : 0
+		});
+	}
+
+	Util.shuffle(Game.cardDatas);
+}
+
 Game.onClickMesh = function(mesh) {
 	var index = mesh.index;
 
@@ -67,6 +101,19 @@ Game.onClick = function() {
 	return false;
 }
 
+Game.cardFlyIn = function(x, y) {
+	var index = x + Game.boardSize.width * y;
+	var cardData = Game.cardDatas[index];
+	var mesh = Game.cardMeshes[cardData.meshIndex];
+
+	mesh.index = index;
+	mesh.position = Game.calcCardStartPosition(x, y);
+	mesh.rotation.z = (Math.random() - 0.5) * (Math.PI / 8);
+	mesh.visible = true;
+
+	Game.cardFlyInTween(mesh, Game.calcCardPosition(x, y)).delay((1500 + index * 200) * Memory.SPEED).start();
+}
+
 Game.showCard = function(index) {
 	var cardData = Game.cardDatas[index];
 
@@ -74,12 +121,18 @@ Game.showCard = function(index) {
 		return;
 	}
 
+	cardData.count += 1;
+
+	Memory.message("Card count: " + cardData.count);
+
 	if (Game.state == Game.STATE_OPEN_FIRST) {
 		Game.selectedIndices[0] = index;
 		Game.state = Game.STATE_OPEN_SECOND;
 	} else {
 		Game.selectedIndices[1] = index;
 		Game.state = Game.STATE_CLOSE;
+
+		Game.hoverCards();
 	}
 
 	cardData.shown = true;
@@ -88,9 +141,8 @@ Game.showCard = function(index) {
 }
 
 Game.hideCards = function() {
-	for ( var i = 0; i < Game.selectedIndices.length; i += 1) {
-		Game.hideCard(Game.selectedIndices[i]);
-	}
+	Game.hideCard(Game.selectedIndices[0]).start();
+	Game.hideCard(Game.selectedIndices[1]).delay(100 * Memory.SPEED).start();
 
 	Game.state = Game.STATE_OPEN_FIRST;
 }
@@ -103,9 +155,39 @@ Game.hideCard = function(index) {
 		return;
 	}
 
-	Game.cardHideTween(Game.cardMeshes[cardData.meshIndex]).onComplete(function() {
+	return Game.cardHideTween(Game.cardMeshes[cardData.meshIndex]).onComplete(function() {
 		cardData.shown = false;
-	}).start();
+	});
+}
+
+Game.hoverCards = function() {
+	if (Game.cardDatas[Game.selectedIndices[0]].cardIndex != Game.cardDatas[Game.selectedIndices[1]].cardIndex) {
+		return false;
+	}
+
+	Memory.addBlock();
+
+	Game.hoverCard(Game.selectedIndices[0], -0.5).delay(300 * Memory.SPEED).start();
+	Game.hoverCard(Game.selectedIndices[1], 0.5).delay(400 * Memory.SPEED).start();
+
+	Util.schedule(Memory.removeBlock, 400 * Memory.SPEED);
+
+	return true;
+}
+
+Game.hoverCard = function(index, positionOffset) {
+	var cardData = Game.cardDatas[index];
+	var mesh = Game.cardMeshes[cardData.meshIndex];
+
+	Memory.removeClickable(mesh);
+
+	var position = Memory.camera.position.clone();
+	var length = position.length();
+
+	position.normalize().setLength(length / 2);
+	position.x += positionOffset * (Game.cardSize + Game.cardSpacing);
+
+	return Game.cardHoverTween(mesh, position);
 }
 
 Game.collectCards = function() {
@@ -114,10 +196,11 @@ Game.collectCards = function() {
 	}
 
 	Game.collectCard(Game.selectedIndices[0]).start();
-	Game.collectCard(Game.selectedIndices[1]).delay(100).start();
+	Game.collectCard(Game.selectedIndices[1]).delay(100 * Memory.SPEED).start();
 
 	Game.state = Game.STATE_OPEN_FIRST;
 
+	Memory.message("Points: " + Game.points);
 	return true;
 }
 
@@ -131,147 +214,126 @@ Game.collectCard = function(index) {
 
 	var mesh = Game.cardMeshes[cardData.meshIndex];
 
-	Memory.removeClickable(mesh);
+	Game.points += Game.pointsPerCount[(cardData.count < Game.pointsPerCount.length) ? cardData.count
+			: Game.pointsPerCount.length - 1];
 
 	return Game.cardCollectTween(mesh, Game.calcCardCollectPosition(-1, 1, Game.leftStackSize++));
 }
 
-Game.initCardDatas = function() {
-	var cardIndices = [];
-
-	for ( var i = 0; i < Game.numberOfCards; i += 1) {
-		cardIndices.push(i);
-	}
-
-	Util.shuffle(cardIndices);
-
-	Game.cardDatas = [];
-
-	for ( var i = 0; i < Game.boardSize.width * Game.boardSize.height; i += 2) {
-		var cardIndex = cardIndices[parseInt(i / 2)];
-
-		Game.cardDatas.push({
-			cardIndex : cardIndex,
-			meshIndex : cardIndex * 2,
-			shown : false
-		});
-		Game.cardDatas.push({
-			cardIndex : cardIndex,
-			meshIndex : cardIndex * 2 + 1,
-			shown : false
-		});
-	}
-
-	Util.shuffle(Game.cardDatas);
-}
-
-Game.cardFlyIn = function(x, y) {
-	var index = x + Game.boardSize.width * y;
-	var cardData = Game.cardDatas[index];
-	var mesh = Game.cardMeshes[cardData.meshIndex];
-
-	mesh.index = index;
-	mesh.position = Game.calcCardStartPosition(x, y);
-	mesh.rotation.z = (Math.random() - 0.5) * (Math.PI / 8);
-	mesh.visible = true;
-
-	var targetPosition = Game.calcCardPosition(x, y);
-
-	new TWEEN.Tween({
+Game.cardFlyInTween = function(mesh, position) {
+	var from = {
 		x : mesh.position.x,
 		y : mesh.position.y,
 		z : mesh.position.z,
 		r : mesh.rotation.z,
 		h : 0
-	}).to({
-		x : targetPosition.x,
-		y : targetPosition.y,
-		z : targetPosition.z,
+	};
+	var to = {
+		x : position.x,
+		y : position.y,
+		z : position.z,
 		r : mesh.rotation.z + 2 * Math.PI,
 		h : Math.PI
-	}, 400 * Memory.SPEED).onUpdate(function() {
+	};
+	var update = function() {
 		mesh.position.x = this.x;
 		mesh.position.y = this.y;
 		mesh.position.z = this.z + Math.sin(this.h) * Game.cardSize;
 		mesh.rotation.z = this.r;
-	}).onComplete(function() {
+	}
+	var complete = function() {
+		Memory.removeBlock();
 		Memory.addClickable(mesh, Game.onClickMesh);
-	}).delay(1500 * Memory.SPEED + index * 200 * Memory.SPEED).start();
+	}
+
+	return new TWEEN.Tween(from).to(to, 400 * Memory.SPEED).onStart(Memory.addBlock).onUpdate(update).onComplete(
+			complete);
 }
 
 Game.cardShowTween = function(mesh) {
-	return new TWEEN.Tween({
+	var from = {
 		rot : mesh.rotation.y,
 		height : 0
-	}).to({
+	};
+	var to = {
 		rot : Util.round(mesh.rotation.y + Math.PI, Math.PI, Math.PI * 2),
 		height : Math.PI
-	}, 200 * Memory.SPEED).onUpdate(function() {
+	};
+	var update = function() {
 		mesh.position.z = (Game.cardThickness / 2) + Math.sin(this.height) * Game.cardSize;
 		mesh.rotation.y = this.rot;
-	});
+	}
+
+	return new TWEEN.Tween(from).to(to, 200 * Memory.SPEED).onUpdate(update);
 }
 
 Game.cardHideTween = function(mesh) {
-	return new TWEEN.Tween({
+	var from = {
 		height : 0,
 		rot : mesh.rotation.y
-	}).to({
+	};
+	var to = {
 		height : Math.PI,
 		rot : Util.round(mesh.rotation.y + Math.PI, 0, Math.PI * 2)
-	}, 200 * Memory.SPEED).onUpdate(function() {
+	};
+	var update = function() {
 		mesh.position.z = (Game.cardThickness / 2) + Math.sin(this.height) * Game.cardSize;
 		mesh.rotation.y = this.rot;
-	});
+	}
+
+	return new TWEEN.Tween(from).to(to, 200 * Memory.SPEED).onUpdate(update);
+}
+
+Game.cardHoverTween = function(mesh, position) {
+	var from = {
+		posX : mesh.position.x,
+		posY : mesh.position.y,
+		posZ : mesh.position.z,
+		rot : mesh.rotation.z
+	};
+	var to = {
+		posX : position.x,
+		posY : position.y,
+		posZ : position.z,
+		rot : Util.round(mesh.rotation.z + Math.PI * 4, 0, Math.PI * 2)
+	};
+	var update = function() {
+		mesh.position.x = this.posX;
+		mesh.position.y = this.posY;
+		mesh.position.z = this.posZ;
+		mesh.rotation.z = this.rot;
+
+		Memory.createSparkle(mesh.position.clone());
+	}
+
+	return new TWEEN.Tween(from).to(to, 1000 * Memory.SPEED).easing(TWEEN.Easing.Cubic.InOut).onStart(Memory.addBlock)
+			.onUpdate(update).onComplete(Memory.removeBlock);
 }
 
 Game.cardCollectTween = function(mesh, position) {
-	return new TWEEN.Tween({
+	var from = {
 		posX : mesh.position.x,
 		posY : mesh.position.y,
 		posZ : mesh.position.z,
 		rot : mesh.rotation.z,
 		fact : 0
-	}).to({
+	};
+	var to = {
 		posX : position.x,
 		posY : position.y,
 		posZ : position.z,
 		rot : mesh.rotation.z + Math.random() * Math.PI * 2 + Math.PI * 6,
 		fact : Math.PI
-	}, 600 * Memory.SPEED).onUpdate(function() {
+	};
+	var update = function() {
 		mesh.position.x = this.posX;
 		mesh.position.y = this.posY;
-		mesh.position.z = this.posZ + Math.sin(this.fact) * Game.cardSize * 2;
+		mesh.position.z = this.posZ + Math.sin(this.fact) * Game.cardSize;
 		mesh.rotation.z = this.rot;
-
 		Memory.createSparkle(mesh.position.clone());
-	});
-}
+	}
 
-Game.createSparkleA = function(position) {
-	var particle = new THREE.ParticleSystem(Game.sparkleGeometry, Game.sparkleMaterial);
-
-	particle.position = position;
-	Memory.scene.add(particle);
-
-	var dir = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
-	var length = Game.cardSize;
-
-	new TWEEN.Tween({
-		posX : position.x,
-		posY : position.y,
-		posZ : position.z
-	}).to({
-		posX : position.x + dir.x * length,
-		posY : position.y + dir.y * length,
-		posZ : position.z + dir.z * length
-	}, 1000).onUpdate(function() {
-		particle.position.x = this.posX;
-		particle.position.y = this.posY;
-		particle.position.z = this.posZ;
-	}).onComplete(function() {
-		Memory.scene.remove(particle);
-	}).start();
+	return new TWEEN.Tween(from).to(to, 600 * Memory.SPEED).easing(TWEEN.Easing.Quadratic.Out).onUpdate(update);
 }
 
 Game.calcCardPosition = function(x, y) {

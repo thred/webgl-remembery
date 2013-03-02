@@ -13,7 +13,9 @@ var Memory = Memory || {
 
 	clickableMeshes : [],
 
-	projector : new THREE.Projector()
+	projector : new THREE.Projector(),
+
+	block : 0
 
 };
 
@@ -205,12 +207,36 @@ Memory.removeClickable = function(mesh) {
 	mesh.onClick = null;
 }
 
+Memory.removeAllClickables = function() {
+	Memory.clickableMeshes = [];
+}
+
 Memory.setClick = function(handler) {
 	Memory.click = handler;
 }
 
+Memory.addBlock = function() {
+	Memory.block += 1;
+}
+
+Memory.removeBlock = function() {
+	Memory.block -= 1;
+
+	if (Memory.block < 0) {
+		Memory.block = 0;
+	}
+}
+
+Memory.message = function(message) {
+	document.getElementById('message').innerHTML = message;
+}
+
 Memory.onDocumentMouseDown = function(event) {
 	event.preventDefault();
+
+	if (Memory.block > 0) {
+		return;
+	}
 
 	if (Memory.click) {
 		if (Memory.click()) {
@@ -371,7 +397,7 @@ Memory.createSparkle = function(position) {
 }
 
 Memory.initTable = function() {
-	 var width = (Game.cardSize + Game.cardSpacing) * 12;
+	var width = (Game.cardSize + Game.cardSpacing) * 12;
 	var height = (Game.cardSize + Game.cardSpacing) * 8;
 	var texture = THREE.ImageUtils.loadTexture('asset/table.png');
 	var material = new THREE.MeshLambertMaterial({
@@ -441,7 +467,7 @@ function initRenderer() {
 
 	renderer.setSize(window.innerWidth, window.innerHeight);
 
-	document.body.appendChild(renderer.domElement);
+	document.canvas.appendChild(renderer.domElement);
 }
 
 function initScene() {

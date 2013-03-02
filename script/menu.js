@@ -41,6 +41,8 @@ Menu.activate = function() {
 }
 
 Menu.onClick = function(mesh) {
+	Memory.removeAllClickables();
+	
 	for ( var i = 0; i < 5; i += 1) {
 		if (i != mesh.index) {
 			Menu.buttonFlyOut(i);
@@ -53,7 +55,7 @@ Menu.onClick = function(mesh) {
 	};
 
 	Menu.buttonHappy(mesh.index);
-	
+
 	return true;
 }
 
@@ -82,9 +84,6 @@ Menu.buttonFlyIn = function(index) {
 
 Menu.buttonFlyOut = function(index) {
 	var mesh = Menu.buttons[index].mesh;
-
-	Memory.removeClickable(mesh);
-
 	var alpha = index / 5 * Math.PI * 2;
 
 	new TWEEN.Tween({
@@ -148,8 +147,9 @@ Menu.load = function() {
 	var geometry = Menu.createButtonGeometry();
 
 	for ( var i = 0; i < 5; i += 1) {
-		var mesh = Menu.buttons[i].mesh = Menu.createButtonMesh(geometry, Util
-				.createTexturedMaterial(Menu.buttons[i].texture), Util.createColoredMaterial(Menu.buttons[i].color), i);
+		var frontMaterial = Util.createTexturedMaterial(Menu.buttons[i].texture);
+		var sideMaterial = Util.createColoredMaterial(Menu.buttons[i].color);
+		var mesh = Menu.buttons[i].mesh = Menu.createButtonMesh(geometry, frontMaterial, sideMaterial, i);
 
 		mesh.visible = false;
 		mesh.position.set(0, 0, -Menu.buttonThickness);
