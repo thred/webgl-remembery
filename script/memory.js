@@ -5,6 +5,7 @@ var Memory = Memory || {
 	STATE_LOAD : 1,
 	STATE_MENU : 2,
 	STATE_GAME : 3,
+	STATE_SCORE : 4,
 
 	state : 0,
 	nextState : 0,
@@ -300,6 +301,10 @@ Memory.animate = function() {
 		case Memory.STATE_GAME:
 			Game.activate();
 			break;
+			
+		case Memory.STATE_SCORE:
+			Score.activate();
+			break;
 		}
 	}
 
@@ -318,6 +323,7 @@ Memory.animate = function() {
 Memory.load = function() {
 	Menu.load();
 	Game.load();
+	Score.load();
 
 	// Memory.sparkleMaterial =
 	// Util.createTexturedMaterial('asset/sparkle.png');

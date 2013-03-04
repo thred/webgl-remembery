@@ -22,7 +22,7 @@ var Game = Game || {
 	rightStackSize : 0,
 
 	points : 0,
-	pointsPerCount : [ 100, 100, 100, 50, 25, 20, 15, 10, 5 ]
+	pointsPerCount : [ 10, 10, 10, 5, 3, 2, 1 ]
 }
 
 Game.activate = function() {
@@ -92,7 +92,14 @@ Game.onClickMesh = function(mesh) {
 
 Game.onClick = function() {
 	if (Game.state == Game.STATE_CLOSE) {
-		if (!Game.collectCards()) {
+		if (Game.collectCards()) {
+			if (Game.leftStackSize + Game.rightStackSize >= Game.boardSize.width * Game.boardSize.height) {
+				Score.points = Game.points;
+				Score.maxPoints = Game.boardSize.width * Game.boardSize.height * Game.pointsPerCount[0];
+
+				Memory.toState(Memory.STATE_SCORE);
+			}
+		} else {
 			Game.hideCards();
 		}
 		return true;
@@ -122,8 +129,6 @@ Game.showCard = function(index) {
 	}
 
 	cardData.count += 1;
-
-	Memory.message("Card count: " + cardData.count);
 
 	if (Game.state == Game.STATE_OPEN_FIRST) {
 		Game.selectedIndices[0] = index;
@@ -200,7 +205,6 @@ Game.collectCards = function() {
 
 	Game.state = Game.STATE_OPEN_FIRST;
 
-	Memory.message("Points: " + Game.points);
 	return true;
 }
 
