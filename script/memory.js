@@ -111,7 +111,23 @@ Memory.initCamera = function() {
 
 	camera.position.set(0, 0, 10);
 
+	camera.up.set(0, 0, 1);
+
 	camera.lookingAt = new THREE.Vector3(0, 0, 0);
+	camera.direction = new THREE.Vector2(0, 0);
+	camera.distance = 0;
+	camera.theta = 0;
+	camera.locate = function(direction, distance, theta) {
+		var vector = new THREE.Vector3(Math.sin(theta) * direction.x, Math.cos(theta) * direction.x, direction.y)
+				.setLength(distance);
+
+		Memory.camera.position.set(Memory.camera.lookingAt.x + vector.x, Memory.camera.lookingAt.y + vector.y,
+				Memory.camera.lookingAt.z + vector.z);
+		Memory.camera.lookAt(Memory.camera.lookingAt);
+		Memory.camera.direction = direction;
+		Memory.camera.distance = distance;
+		Memory.camera.theta = theta;
+	}
 	camera.lookAt(camera.lookingAt);
 
 	Memory.scene.add(Memory.camera = camera);
@@ -150,13 +166,42 @@ Memory.moveCamera = function() {
 	//	
 	// tween.start();
 
-	Memory.tweenCameraTo(new THREE.Vector3(0, -0.6, 1.2), new THREE.Vector3(0, 0, 0), totalWidth, totalHeight,
+	Memory.tweenCameraTo(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, -0.6, 1.2), totalWidth, totalHeight,
 			boardWidth * boardHeight * 100).start();
 }
 
-Memory.tweenCameraTo = function(viewVector, lookAtVector, width, height, duration) {
+Memory.tweenCameraLocate = function(lookAtVector, direction, theta, width, height, duration) {
 	var ratio = (width / height) / (window.innerWidth / window.innerHeight);
+	var distance = (height * Math.max(1, ratio) / 2) * (1 / Math.tan(Math.PI * Memory.fov / 360)) * 1.2;
 
+	var from = {
+		viewX : Memory.camera.lookingAt.x,
+		viewY : Memory.camera.lookingAt.y,
+		viewZ : Memory.camera.lookingAt.z,
+		directionX : Memory.camera.direction.x,
+		directionY : Memory.camera.direction.y,
+		d : Memory.camera.distance,
+		t : Memory.camera.theta
+	};
+	var to = {
+		viewX : lookAtVector.x,
+		viewY : lookAtVector.y,
+		viewZ : lookAtVector.z,
+		directionX : direction.x,
+		directionY : direction.y,
+		d : distance,
+		t : theta
+	};
+	var update = function() {
+		Memory.camera.lookingAt = new THREE.Vector3(this.viewX, this.viewY, this.viewZ);
+		Memory.camera.locate(new THREE.Vector2(this.directionX, this.directionY), this.d, this.t);
+	}
+
+	return new TWEEN.Tween(from).to(to, duration * Memory.SPEED).onUpdate(update).easing(TWEEN.Easing.Cubic.InOut);
+}
+
+Memory.tweenCameraTo = function(lookAtVector, viewVector, width, height, duration) {
+	var ratio = (width / height) / (window.innerWidth / window.innerHeight);
 	var dist = (height * Math.max(1, ratio) / 2) * (1 / Math.tan(Math.PI * Memory.fov / 360)) * 1.2;
 
 	viewVector = viewVector.setLength(dist);
@@ -301,7 +346,7 @@ Memory.animate = function() {
 		case Memory.STATE_GAME:
 			Game.activate();
 			break;
-			
+
 		case Memory.STATE_SCORE:
 			Score.activate();
 			break;

@@ -6,8 +6,8 @@ var Menu = Menu || {
 	buttons : [ {
 		texture : 'asset/xsmall.png',
 		color : 0xcc00ff,
-		width : 4,
-		height : 2
+		width : 2,
+		height : 1
 	}, {
 		texture : 'asset/small.png',
 		color : 0x4400aa,
@@ -36,13 +36,17 @@ Menu.activate = function() {
 		Menu.buttonFlyIn(i);
 	}
 
-	Memory.tweenCameraTo(new THREE.Vector3(0, -0.6, 1.2), new THREE.Vector3(0, 0, 0),
+	Memory.tweenCameraLocate(new THREE.Vector3(0, 0, 0), new THREE.Vector2(-0.6, 1.2), Math.PI,
 			(Menu.buttonSize + Menu.buttonSpacing) * 3, (Menu.buttonSize + Menu.buttonSpacing) * 3, 2000).start();
+	// Memory.tweenCameraTo(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0,
+	// -0.6, 1.2),
+	// (Menu.buttonSize + Menu.buttonSpacing) * 3, (Menu.buttonSize +
+	// Menu.buttonSpacing) * 3, 2000).start();
 }
 
 Menu.onClick = function(mesh) {
 	Memory.removeAllClickables();
-	
+
 	for ( var i = 0; i < 5; i += 1) {
 		if (i != mesh.index) {
 			Menu.buttonFlyOut(i);

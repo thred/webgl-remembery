@@ -22,7 +22,7 @@ var Game = Game || {
 	rightStackSize : 0,
 
 	points : 0,
-	pointsPerCount : [ 10, 10, 10, 5, 3, 2, 1 ]
+	pointsPerCount : [ 100, 100, 100, 50, 30, 20, 10, 5, 2, 1 ]
 }
 
 Game.activate = function() {
@@ -38,13 +38,17 @@ Game.activate = function() {
 	var viewWidth = Game.boardSize.width * (Game.cardSize + Game.cardSpacing);
 	var viewHeight = Game.boardSize.height * (Game.cardSize + Game.cardSpacing);
 
-	Memory.tweenCameraTo(new THREE.Vector3(0, -1.2, 0.6), new THREE.Vector3(0, 0, 0), viewWidth, viewHeight,
-			1000 * Memory.SPEED).start();
+	Memory.tweenCameraLocate(new THREE.Vector3(0, -viewHeight / 16, 0), new THREE.Vector2(-0.6, 1.2), 0, viewWidth,
+			viewHeight, 5000).start();
 
-	Util.schedule(function() {
-		Memory.tweenCameraTo(new THREE.Vector3(0, -0.6, 1.2), new THREE.Vector3(0, -viewHeight / 16, 0), viewWidth,
-				viewHeight, (Game.boardSize.width * 200 + 400) * Memory.SPEED).start();
-	}, Game.boardSize.width * (Game.boardSize.height - 1) * 200 * Memory.SPEED);
+	// Memory.tweenCameraTo(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0,
+	// -1.2, 0.6), viewWidth, viewHeight,
+	// 1000 * Memory.SPEED).start();
+
+//	Util.schedule(function() {
+//		Memory.tweenCameraTo(new THREE.Vector3(0, -viewHeight / 16, 0), new THREE.Vector3(0, -0.6, 1.2), viewWidth,
+//				viewHeight, (Game.boardSize.width * 200 + 400) * Memory.SPEED).start();
+//	}, Game.boardSize.width * (Game.boardSize.height - 1) * 200 * Memory.SPEED);
 
 	Memory.setClick(Game.onClick);
 }

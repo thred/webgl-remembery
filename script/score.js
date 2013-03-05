@@ -9,17 +9,62 @@ var Score = Score || {
 }
 
 Score.activate = function() {
-	var position = Memory.camera.position.clone();
-	var length = position.length();
+	// var position = Memory.camera.position.clone();
+	// var length = position.length();
 
-	position.normalize().setLength(length / 2);
-
-	Score.pointsMesh.position = position;
-	Score.pointsMesh.lookAt(Memory.camera.position);
-	Score.pointsMesh.rotation.x += Math.PI;
+	Score.pointsMesh.position = new THREE.Vector3(0, -Score.pointsHeight, Score.pointsHeight);
+	Score.pointsMesh.rotation.x += Math.PI / 4;
+	Score.pointsMesh.scale.set(0, 0, 0);
 	Score.pointsMesh.visible = true;
 
-	Score.render(Score.points, Score.maxPoints);
+	Memory.tweenCameraTo(Score.pointsMesh.position, new THREE.Vector3(0, -1, 1), Score.pointsWidth * 1.25,
+			Score.pointsHeight * 1.25, 2000 * Memory.SPEED).start();
+
+	// position.normalize().setLength(length / 2);
+	//
+	// Score.pointsMesh.position = position;
+	// Score.pointsMesh.lookAt(Memory.camera.position);
+	// Score.pointsMesh.rotation.x += Math.PI;
+	// Score.pointsMesh.visible = true;
+	//
+	Score.render(0, 0);
+
+	Score.showScoreTween().delay(1000 * Memory.SPEED).onComplete(function() {
+		Score.countScoreTween().start();
+	}).start();
+}
+
+Score.showScoreTween = function() {
+	var from = {
+		rotation : 0,
+		scale : 0
+	}
+	var to = {
+		rotation : Math.PI / 2,
+		scale : 1
+	}
+	var update = function() {
+		Score.pointsMesh.rotation.x = Math.sin(this.rotation) * (Math.PI * 25 + Math.PI / 4);
+		Score.pointsMesh.scale.x = this.scale;
+		Score.pointsMesh.scale.y = this.scale;
+		Score.pointsMesh.scale.z = this.scale;
+	}
+	return new TWEEN.Tween(from).to(to, 2000 * Memory.SPEED).onUpdate(update);
+}
+
+Score.countScoreTween = function() {
+	var from = {
+		value : 0,
+		maxValue : 0
+	}
+	var to = {
+		value : Score.points,
+		maxValue : Score.maxPoints
+	}
+	var update = function() {
+		Score.render(Math.round(this.value), Math.round(this.maxValue));
+	}
+	return new TWEEN.Tween(from).to(to, 3000 * Memory.SPEED).onUpdate(update);
 }
 
 Score.load = function() {
