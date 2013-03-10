@@ -37,18 +37,17 @@ Game.activate = function() {
 
 	var viewWidth = Game.boardSize.width * (Game.cardSize + Game.cardSpacing);
 	var viewHeight = Game.boardSize.height * (Game.cardSize + Game.cardSpacing);
+	var duration = Game.boardSize.width * Game.boardSize.height * 200;
 
-	Memory.tweenCameraLocate(new THREE.Vector3(0, -viewHeight / 16, 0), new THREE.Vector2(-0.6, 1.2), 0, viewWidth,
-			viewHeight, 5000).start();
+	Memory.tweenCameraLocate(new THREE.Vector3(0, -viewHeight / 16, 0), new THREE.Vector2(1.2, 0.3),
+			Memory.camera.theta + Math.PI / 2, viewHeight, viewWidth, duration * Memory.SPEED).onComplete(
+			function() {
 
-	// Memory.tweenCameraTo(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0,
-	// -1.2, 0.6), viewWidth, viewHeight,
-	// 1000 * Memory.SPEED).start();
+				Memory.tweenCameraLocate(new THREE.Vector3(0, -viewHeight / 16, 0), new THREE.Vector2(0.3, 1),
+						Memory.camera.theta + Math.PI / 2, viewWidth, viewHeight,
+						1500 * Memory.SPEED + duration / 2 * Memory.SPEED).start();
 
-//	Util.schedule(function() {
-//		Memory.tweenCameraTo(new THREE.Vector3(0, -viewHeight / 16, 0), new THREE.Vector3(0, -0.6, 1.2), viewWidth,
-//				viewHeight, (Game.boardSize.width * 200 + 400) * Memory.SPEED).start();
-//	}, Game.boardSize.width * (Game.boardSize.height - 1) * 200 * Memory.SPEED);
+			}).start();
 
 	Memory.setClick(Game.onClick);
 }

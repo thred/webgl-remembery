@@ -36,12 +36,8 @@ Menu.activate = function() {
 		Menu.buttonFlyIn(i);
 	}
 
-	Memory.tweenCameraLocate(new THREE.Vector3(0, 0, 0), new THREE.Vector2(-0.6, 1.2), Math.PI,
+	Memory.tweenCameraLocate(new THREE.Vector3(0, 0, 0), new THREE.Vector2(0.5, 1), Math.PI,
 			(Menu.buttonSize + Menu.buttonSpacing) * 3, (Menu.buttonSize + Menu.buttonSpacing) * 3, 2000).start();
-	// Memory.tweenCameraTo(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0,
-	// -0.6, 1.2),
-	// (Menu.buttonSize + Menu.buttonSpacing) * 3, (Menu.buttonSize +
-	// Menu.buttonSpacing) * 3, 2000).start();
 }
 
 Menu.onClick = function(mesh) {
@@ -59,57 +55,69 @@ Menu.onClick = function(mesh) {
 	};
 
 	Menu.buttonHappy(mesh.index);
+	Memory.toState(Memory.STATE_GAME);
 
 	return true;
 }
 
 Menu.buttonFlyIn = function(index) {
 	var mesh = Menu.buttons[index].mesh;
-
-	new TWEEN.Tween({
-		alpha : index / 5 * Math.PI * 2 + Math.PI * 8,
+	var from = {
+		alpha : index / 5 * Math.PI * 2 - Math.PI * 8,
 		dist : 6,
-		rot : -Math.PI * 8
-	}).to({
-		alpha : index / 5 * Math.PI * 2,
+		rot : Math.PI * 8
+	};
+	var to = {
+		alpha : index / 5 * Math.PI * 2 + Math.PI,
 		dist : 1,
-		rot : 0
-	}, 2000 * Memory.SPEED).onStart(function() {
+		rot : Math.PI
+	};
+	var start = function() {
 		mesh.visible = true;
-	}).onUpdate(function() {
+	};
+	var update = function() {
 		mesh.position.x = Math.sin(this.alpha) * (Menu.buttonSize + Menu.buttonSpacing) * this.dist;
 		mesh.position.y = Math.cos(this.alpha) * (Menu.buttonSize + Menu.buttonSpacing) * this.dist;
 		mesh.position.z = Menu.buttonThickness / 2;
 		mesh.rotation.z = this.rot;
-	}).onComplete(function() {
+	};
+	var complete = function() {
 		Memory.addClickable(mesh, Menu.onClick);
-	}).easing(TWEEN.Easing.Sinusoidal.Out).start();
+	};
+
+	new TWEEN.Tween(from).to(to, 2000 * Memory.SPEED).onStart(start).onUpdate(update).onComplete(complete).easing(
+			TWEEN.Easing.Sinusoidal.Out).start();
 }
 
 Menu.buttonFlyOut = function(index) {
 	var mesh = Menu.buttons[index].mesh;
-	var alpha = index / 5 * Math.PI * 2;
-
-	new TWEEN.Tween({
+	var alpha = index / 5 * Math.PI * 2 + Math.PI;
+	var from = {
 		posX : mesh.position.x,
 		posY : mesh.position.y,
 		posZ : mesh.position.z,
 		height : 0,
 		rot : 0
-	}).to({
+	};
+	var to = {
 		posX : Math.sin(alpha) * (Menu.buttonSize + Menu.buttonSpacing) * 16,
 		posY : Math.cos(alpha) * (Menu.buttonSize + Menu.buttonSpacing) * 16,
 		posZ : mesh.position.z,
 		height : Math.PI / 2,
 		rot : Math.PI * 32
-	}, 2000 * Memory.SPEED).onUpdate(function() {
+	};
+	var update = function() {
 		mesh.position.x = this.posX;
 		mesh.position.y = this.posY;
 		mesh.position.z = this.posZ + Math.abs(Math.sin(this.height)) * Menu.buttonSize * 8;
 		mesh.rotation.x = this.rot;
-	}).onComplete(function() {
+	};
+	var complete = function() {
 		mesh.visible = false;
-	}).easing(TWEEN.Easing.Sinusoidal.In).start();
+	};
+
+	new TWEEN.Tween(from).to(to, 2000 * Memory.SPEED).onUpdate(update).onComplete(complete).easing(
+			TWEEN.Easing.Sinusoidal.In).start();
 }
 
 Menu.buttonHappy = function(index) {
@@ -143,7 +151,6 @@ Menu.buttonHappy = function(index) {
 		Memory.createSparkle(mesh.position.clone());
 	}).onComplete(function() {
 		mesh.visible = false;
-		Memory.toState(Memory.STATE_GAME);
 	})).start();
 }
 
@@ -172,7 +179,7 @@ Menu.createButtonGeometry = function() {
 	shape.quadraticCurveTo(-radius, -radius, -radius, 0);
 	shape.quadraticCurveTo(-radius, radius, 0, radius);
 
-	return new THREE.ExtrudeGeometry(shape, {
+	var geometry = new THREE.ExtrudeGeometry(shape, {
 		amount : Menu.buttonThickness,
 		bevelSegments : 2,
 		steps : 2,
@@ -182,6 +189,10 @@ Menu.createButtonGeometry = function() {
 		extrudeMaterial : 1,
 		UVGenerator : Util.UVGenerator
 	});
+	
+	geometry.computeVertexNormals();
+	
+	return geometry;
 }
 
 Menu.createButtonMesh = function(geometry, frontMaterial, sideMaterial, index) {

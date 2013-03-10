@@ -3,9 +3,10 @@ var Memory = Memory || {
 
 	STATE_NONE : 0,
 	STATE_LOAD : 1,
-	STATE_MENU : 2,
-	STATE_GAME : 3,
-	STATE_SCORE : 4,
+	STATE_INTRO : 2,
+	STATE_MENU : 3,
+	STATE_GAME : 4,
+	STATE_SCORE : 5,
 
 	state : 0,
 	nextState : 0,
@@ -109,17 +110,18 @@ Memory.initLight = function() {
 Memory.initCamera = function() {
 	var camera = new THREE.PerspectiveCamera(Memory.fov, window.innerWidth / window.innerHeight, 1, 1000);
 
-	camera.position.set(0, 0, 10);
-
+	camera.position.set(0, 0, 0);
 	camera.up.set(0, 0, 1);
-
 	camera.lookingAt = new THREE.Vector3(0, 0, 0);
 	camera.direction = new THREE.Vector2(0, 0);
 	camera.distance = 0;
 	camera.theta = 0;
 	camera.locate = function(direction, distance, theta) {
-		var vector = new THREE.Vector3(Math.sin(theta) * direction.x, Math.cos(theta) * direction.x, direction.y)
-				.setLength(distance);
+		var vector = new THREE.Vector3(Math.sin(theta + Math.PI) * direction.x,
+				Math.cos(theta + Math.PI) * direction.x, direction.y).setLength(distance);
+		// var vector = new THREE.Vector3(Math.sin(theta) * direction.x,
+		// Math.cos(theta) * direction.x, direction.y)
+		// .setLength(distance);
 
 		Memory.camera.position.set(Memory.camera.lookingAt.x + vector.x, Memory.camera.lookingAt.y + vector.y,
 				Memory.camera.lookingAt.z + vector.z);
@@ -128,9 +130,9 @@ Memory.initCamera = function() {
 		Memory.camera.distance = distance;
 		Memory.camera.theta = theta;
 	}
-	camera.lookAt(camera.lookingAt);
 
 	Memory.scene.add(Memory.camera = camera);
+	camera.locate(new THREE.Vector2(1, 1), 100, 1);
 }
 
 Memory.moveCamera = function() {
@@ -329,7 +331,7 @@ Memory.toState = function(state) {
 	Memory.nextState = state;
 }
 
-Memory.animate = function() {
+Memory.animate = function(time) {
 	if (Memory.nextState > Memory.STATE_NONE) {
 		Memory.state = Memory.nextState;
 		Memory.nextState = Memory.STATE_NONE;
@@ -337,6 +339,10 @@ Memory.animate = function() {
 		switch (Memory.state) {
 		case Memory.STATE_LOAD:
 			Memory.load();
+			break;
+
+		case Memory.STATE_INTRO:
+			Intro.activate();
 			break;
 
 		case Memory.STATE_MENU:
@@ -353,6 +359,12 @@ Memory.animate = function() {
 		}
 	}
 
+	switch (Memory.state) {
+	case Memory.STATE_INTRO:
+		Intro.animate(time);
+		break;
+	}
+
 	// Memory.dings.rotation.x += 0.01;
 	// camera.position.x = mouseX * 5;
 	// camera.position.y = -18 - mouseY * 5;
@@ -366,6 +378,7 @@ Memory.animate = function() {
 }
 
 Memory.load = function() {
+//	Intro.load();
 	Menu.load();
 	Game.load();
 	Score.load();
@@ -379,9 +392,9 @@ Memory.load = function() {
 	Memory.sparkleGeometry = new THREE.Geometry();
 	Memory.sparkleGeometry.vertices.push(new THREE.Vector3(0, 0, 0));
 
-	Memory.initTable();
+	//Memory.initTable();
 
-	Memory.toState(Memory.STATE_MENU);
+	Memory.toState(Memory.STATE_INTRO);
 
 	//
 	// var cardBottomTexture =

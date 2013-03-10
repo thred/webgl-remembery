@@ -6,7 +6,7 @@
 body {
 	margin: 0px;
 	overflow: hidden;
-	background: #000000;
+	background: url('asset/sky.png');
 	font: bold 200% sans-serif;
 	color: white;
 	text-shadow: 0px 0px 4px #000000;
@@ -25,12 +25,27 @@ div#message {
 
 	<script src="script/detector.js"></script>
 	<script src="script/three.js"></script>
+	<script src="script/soundjs-0.4.0.min.js"></script>
+	<script src="fonts/foo_regular.typeface.js"></script>
 	<script src="script/tween.js"></script>
+	<script src="script/remembery.js"></script>
+	<script src="script/button.js"></script>
+	<script src="script/card.js"></script>
+	<script src="script/animation.js"></script>
 	<script src="script/util.js"></script>
-	<script src="script/menu.js"></script>
-	<script src="script/game.js"></script>
-	<script src="script/score.js"></script>
-	<script src="script/memory.js"></script>
+	<script src="script/firework.js"></script>
+	<script src="script/intro.js"></script>
+	<script src="script/size.js"></script>
+	<script src="script/board.js"></script>
+<!-- 	<script src="script/menu.js"></script> -->
+<!-- 	<script src="script/game.js"></script> -->
+<!-- 	<script src="script/score.js"></script> -->
+<!-- 	<script src="script/memory.js"></script> -->
+	<script>
+		$.init();
+		$.animate();
+		$.activate("intro");
+	</script>
 </body>
 
 </html>
