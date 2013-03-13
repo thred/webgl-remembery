@@ -1,17 +1,17 @@
 var $ = $ || {
-	SPEED : 1,
+	SPEED: 1,
 
-	pages : {},
-	clickableMeshes : [],
-	projector : new THREE.Projector(),
-	block : 0
+	pages: {},
+	clickableMeshes: [],
+	projector: new THREE.Projector(),
+	block: 0
 };
 
 $.init = function() {
 	$.windowSize = {
-		width : window.innerWidth,
-		height : window.innerHeight
-	}
+		width: window.innerWidth,
+		height: window.innerHeight
+	};
 
 	$.fov = 50;
 
@@ -27,34 +27,35 @@ $.init = function() {
 
 	$.load();
 	// Memory.toState(Memory.STATE_LOAD);
-}
+};
 
 $.initLight = function() {
 	$.scene.add(new THREE.AmbientLight(0x222222));
 
 	var light = new THREE.DirectionalLight(0xfffff0, 0.5);
-	light.position.set(0.5, -1, 1).normalize();
+	light.position.set(0.5, - 1, 1).normalize();
 	$.scene.add(light);
 
 	light = new THREE.DirectionalLight(0xfffff0, 1.0);
-	light.position.set(-0.5, -1, 1).normalize();
+	light.position.set(-0.5, - 1, 1).normalize();
 	$.scene.add(light);
-}
+};
 
 $.initCamera = function() {
 	$.camera = new THREE.PerspectiveCamera(this.fov, window.innerWidth / window.innerHeight, 1, 1000);
 
 	$.camera.position.set(0, 0, 0);
 	$.camera.up.set(0, 0, 1);
-
+	$.camera.directionOffset = 0;
+	$.camera.thetaOffset = 0;
 	$.scene.add($.camera);
-}
+};
 
 $.initRenderer = function() {
 	if (Detector.webgl) {
 		var renderer = $.renderer = new THREE.WebGLRenderer({
-			antialias : true,
-			preserveDrawingBuffer : true
+			antialias: true,
+			preserveDrawingBuffer: true
 		});
 
 		renderer.setSize(window.innerWidth, window.innerHeight);
@@ -62,7 +63,7 @@ $.initRenderer = function() {
 	} else {
 		Detector.addGetWebGLMessage();
 	}
-}
+};
 
 $.animate = function(time) {
 	if ($.activePage) {
@@ -106,11 +107,11 @@ $.animate = function(time) {
 	requestAnimationFrame($.animate);
 	$.renderer.render($.scene, $.camera);
 	TWEEN.update();
-}
+};
 
 $.register = function(name, page) {
 	$.pages[name] = page;
-}
+};
 
 $.activate = function(name) {
 	if ($.activePage) {
@@ -119,24 +120,24 @@ $.activate = function(name) {
 
 	$.activePage = $.pages[name];
 	$.activePage.activate();
-}
+};
 
 $.get = function(name) {
 	return $.pages[name];
-}
+};
 
 $.play = function(id, position, volume) {
 	position = position || $.camera.position;
 	volume = volume || 1;
-	
+
 	var distance = position.distanceTo($.camera.position);
-	
+
 	if (distance > 100) {
 		return;
 	}
 
 	createjs.Sound.play(id, "none", 0, 0, 0, Math.min((1 - distance / 100) * volume, 1));
-}
+};
 
 $.load = function() {
 	$.loadSound("bubble0", "asset/bubble0.ogg");
@@ -144,40 +145,39 @@ $.load = function() {
 	$.loadSound("bubble2", "asset/bubble2.ogg");
 	$.loadSound("spring", "asset/spring.ogg");
 	$.loadSound("grow", "asset/grow.ogg");
-	
 
 	this.firework.load();
-	for (name in $.pages) {
+	for (var name in $.pages) {
 		$.pages[name].load();
 	}
-}
+};
 
 $.loadSound = function(id, asset) {
 	createjs.Sound.registerSound(asset, id);
-}
+};
 
 $.addClickable = function(mesh, object, handler) {
 	mesh.onClickObject = object;
 	mesh.onClickHandler = handler;
 	$.clickableMeshes.push(mesh);
-}
+};
 
 $.removeClickable = function(mesh) {
 	mesh.onClick = null;
 	$.clickableMeshes.splice($.clickableMeshes.indexOf(mesh), 1);
-}
+};
 
 $.removeAllClickables = function() {
 	$.clickableMeshes = [];
-}
+};
 
 $.setClick = function(handler) {
 	$.click = handler;
-}
+};
 
 $.addBlock = function() {
 	$.block += 1;
-}
+};
 
 $.removeBlock = function() {
 	$.block -= 1;
@@ -185,11 +185,11 @@ $.removeBlock = function() {
 	if ($.block < 0) {
 		$.block = 0;
 	}
-}
+};
 
 $.message = function(message) {
 	document.getElementById('message').innerHTML = message;
-}
+};
 
 $.onDocumentMouseDown = function(event) {
 	event.preventDefault();
@@ -204,37 +204,40 @@ $.onDocumentMouseDown = function(event) {
 		}
 	}
 
-	var vector = new THREE.Vector3((event.clientX / window.innerWidth) * 2 - 1,
-			-(event.clientY / window.innerHeight) * 2 + 1, 0.5);
+	var vector = new THREE.Vector3((event.clientX / window.innerWidth) * 2 - 1, - (event.clientY / window.innerHeight) * 2 + 1, 0.5);
 	$.projector.unprojectVector(vector, $.camera);
 
 	var raycaster = new THREE.Raycaster($.camera.position, vector.sub($.camera.position).normalize());
 	var intersects = raycaster.intersectObjects($.clickableMeshes);
 
-	for ( var i = 0; i < intersects.length; i += 1) {
+	for (var i = 0; i < intersects.length; i += 1) {
 		var mesh = intersects[i].object;
 
 		if (mesh.onClickHandler.call(mesh.onClickObject, mesh)) {
 			return;
 		}
 	}
-}
+};
 
 $.onDocumentMouseMove = function(event) {
 	$.mouse = {
-		x : (event.clientX - $.windowSize.width / 2) / ($.windowSize.width / 2),
-		y : (event.clientY - $.windowSize.height / 2) / ($.windowSize.height / 2)
-	}
-}
+		x: (event.clientX - $.windowSize.width / 2) / ($.windowSize.width / 2),
+		y: (event.clientY - $.windowSize.height / 2) / ($.windowSize.height / 2)
+	};
+
+	//if ($.camera) {
+	//	$.camera.locateOffset($.mouse.y*2, $.mouse.x*2);
+	//}
+};
 
 $.onWindowResize = function() {
 	$.windowSize = {
-		width : window.innerWidth,
-		height : window.innerHeight
-	}
+		width: window.innerWidth,
+		height: window.innerHeight
+	};
 
 	$.camera.aspect = $.windowSize.width / $.windowSize.height;
 	$.camera.updateProjectionMatrix();
 
 	$.renderer.setSize(window.innerWidth, window.innerHeight);
-}
+};

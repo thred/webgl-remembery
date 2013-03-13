@@ -4,12 +4,12 @@ $.Button = function(image, color) {
 	var geometry = this.createGeometry();
 	var frontMaterial = Util.createTexturedMaterial(image, 1);
 	var sideMaterial = Util.createColoredMaterial(color);
-	var mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial([ frontMaterial, sideMaterial ]));
+	var mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial([frontMaterial, sideMaterial]));
 
 	this.rotation.x = Math.PI / 2;
 
 	this.add(mesh);
-}
+};
 
 $.Button.prototype = Object.create(THREE.Object3D.prototype);
 
@@ -20,13 +20,13 @@ $.Button.prototype.createGeometry = function() {
 
 	var shape = Util.createCircleShape(0.5);
 	var geometry = new $.ExtrudeGeometry(shape, {
-		amount : 0.1,
-		bevelSegments : 2,
-		steps : 2,
-		bevelSize : 0.01,
-		bevelThickness : 0.01,
-		material : 0,
-		extrudeMaterial : 1,
+		amount: 0.1,
+		bevelSegments: 2,
+		steps: 2,
+		bevelSize: 0.01,
+		bevelThickness: 0.01,
+		material: 0,
+		extrudeMaterial: 1
 	});
 
 	geometry.computeFaceNormals();
@@ -36,4 +36,4 @@ $.Button.prototype.createGeometry = function() {
 	THREE.GeometryUtils.center(geometry);
 
 	return $.Button.uniqueGeometry = geometry;
-}
+};

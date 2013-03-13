@@ -1,11 +1,16 @@
 THREE.Camera.prototype.computeDistance = function(width, height) {
 	var ratio = (width / height) / (window.innerWidth / window.innerHeight);
 	return (height * Math.max(1, ratio) / 2) * (1 / Math.tan(Math.PI * $.fov / 360)) * 1.2;
-}
+};
 
 THREE.Camera.prototype.locate = function(lookingAt, direction, distance, theta) {
-	var vector = new THREE.Vector3(Math.sin(theta + Math.PI) * direction.x, Math.cos(theta + Math.PI) * direction.x,
-			direction.y).setLength(distance);
+	var dir = direction + this.directionOffset;
+	var t = theta + this.thetaOffset;
+
+	var directionX = Math.cos(dir);
+	var directionY = Math.sin(dir);
+
+	var vector = new THREE.Vector3(Math.sin(t + Math.PI) * directionX, Math.cos(t + Math.PI) * directionX, directionY).setLength(distance);
 
 	this.position.set(lookingAt.x + vector.x, lookingAt.y + vector.y, lookingAt.z + vector.z);
 	this.lookAt(lookingAt);
@@ -14,22 +19,28 @@ THREE.Camera.prototype.locate = function(lookingAt, direction, distance, theta) 
 	this.direction = direction;
 	this.distance = distance;
 	this.theta = theta;
-}
+};
+
+THREE.Camera.prototype.locateOffset = function(directionOffset, thetaOffset) {
+	this.directionOffset = directionOffset;
+	this.thetaOffset = thetaOffset;
+	this.locate(this.lookingAt, this.direction, this.distance, this.theta);
+};
 
 THREE.Object3D.prototype.setVisible = function(visible) {
 	this.visible = visible;
 
-	for ( var i = 0; i < this.children.length; i += 1) {
+	for (var i = 0; i < this.children.length; i += 1) {
 		this.children[i].setVisible(visible);
 	}
-}
+};
 
 THREE.Object3D.prototype.computeBoundingBox = function() {
 	if (this.geometry) {
 		this.boundingBox = this.geometry.computeBoundingBox();
 	}
 
-	for ( var i = 0; i < this.children.length; i += 1) {
+	for (var i = 0; i < this.children.length; i += 1) {
 		if (this.children[i].computeBoundingBox) {
 			var boundingBox = this.children[i].computeBoudingBox();
 
@@ -43,16 +54,180 @@ THREE.Object3D.prototype.computeBoundingBox = function() {
 	}
 
 	return this.boundingBox;
-}
+};
 
 $.ExtrudeGeometry = function(shapes, options) {
 	THREE.ExtrudeGeometry.call(this, shapes, options);
-}
+};
 
 $.ExtrudeGeometry.prototype = Object.create(THREE.ExtrudeGeometry.prototype);
 
+
+var Util = Util || {
+
+};
+
+Util.createRoundedRectangleShape = function(width, height, radius) {
+	var shape = new THREE.Shape();
+	var hw = width / 2;
+	var hh = height / 2;
+
+	shape.moveTo(-hw + radius, hh);
+	shape.lineTo(hw - radius, hh);
+	shape.quadraticCurveTo(hw, hh, hw, hh - radius);
+	shape.lineTo(hw, - hh + radius);
+	shape.quadraticCurveTo(hw, - hh, hw - radius, - hh);
+	shape.lineTo(-hw + radius, - hh);
+	shape.quadraticCurveTo(-hw, - hh, - hw, - hh + radius);
+	shape.lineTo(-hw, hh - radius);
+	shape.quadraticCurveTo(-hw, hh, - hw + radius, hh);
+
+	return shape;
+};
+
+Util.createCircleShape = function(radius) {
+	var shape = new THREE.Shape();
+
+	shape.moveTo(0, radius);
+	shape.quadraticCurveTo(radius, radius, radius, 0);
+	shape.quadraticCurveTo(radius, - radius, 0, - radius);
+	shape.quadraticCurveTo(-radius, - radius, - radius, 0);
+	shape.quadraticCurveTo(-radius, radius, 0, radius);
+
+	return shape;
+};
+
+Util.shuffle = function(array) {
+	for (var i = 0; i < array.length; i += 1) {
+		var j = parseInt(Math.random() * array.length, 10);
+		var tmp = array[j];
+		array[j] = array[i];
+		array[i] = tmp;
+	}
+};
+
+Util.schedule = function(f, delay) {
+	new TWEEN.Tween(0).onComplete(f).delay(delay).start();
+};
+
+Util.round = function(value, offset, to) {
+	return Math.round((value - offset) / to) * to + offset;
+};
+
+Util.rotateAroundWorldAxis = function(object, axis, radians) {
+	var rotationMatrix = new THREE.Matrix4();
+
+	rotationMatrix.makeRotationAxis(axis.normalize(), radians);
+	rotationMatrix.multiply(object.matrix); // pre-multiply
+	object.matrix = rotationMatrix;
+	object.rotation.setEulerFromRotationMatrix(object.matrix);
+};
+
+Util.createParticleMaterial = function(textureFile) {
+	var texture = THREE.ImageUtils.loadTexture(textureFile);
+	var material = new THREE.MeshBasicMaterial({
+		map: texture,
+		blending: THREE.AdditiveBlending,
+		transparent: true
+	});
+
+	return material;
+};
+
+Util.createTexturedMaterial = function(textureFile, textureRepeat, transparent, opacity) {
+	textureRepeat = textureRepeat || 1;
+	transparent = transparent || false;
+	opacity = opacity || 1;
+
+	var texture = THREE.ImageUtils.loadTexture(textureFile);
+
+	texture.minFilter = texture.magFilter = THREE.LinearFilter;
+	texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+	texture.repeat.set(textureRepeat, textureRepeat);
+
+	var material = new THREE.MeshPhongMaterial({
+		map: texture,
+		specular: 0xffffff,
+		ambient: 0xaaccff
+	});
+
+	if (transparent) {
+		material.transparent = true;
+		material.opacity = opacity;
+	}
+
+	return material;
+};
+
+Util.createColoredMaterial = function(materialColor) {
+	return new THREE.MeshPhongMaterial({
+		color: materialColor,
+		specular: 0xffffff,
+		ambient: 0xaaccff
+
+	});
+};
+
+THREE.ExtrudeGeometry.WorldUVGenerator = {
+	generateTopUV: function(geometry, extrudedShape, extrudeOptions, indexA, indexB, indexC) {
+		var ax = geometry.vertices[indexA].x,
+			ay = geometry.vertices[indexA].y,
+
+			bx = geometry.vertices[indexB].x,
+			by = geometry.vertices[indexB].y,
+
+			cx = geometry.vertices[indexC].x,
+			cy = geometry.vertices[indexC].y,
+
+			bb = extrudedShape.getBoundingBox(),
+			bbx = bb.maxX - bb.minX,
+			bby = bb.maxY - bb.minY;
+
+		return [new THREE.Vector2((ax - bb.minX) / bbx, 1 - (ay - bb.minY) / bby),
+		new THREE.Vector2((bx - bb.minX) / bbx, 1 - (by - bb.minY) / bby),
+		new THREE.Vector2((cx - bb.minX) / bbx, 1 - (cy - bb.minY) / bby)];
+	},
+
+	generateBottomUV: function(geometry, extrudedShape, extrudeOptions, indexA, indexB, indexC) {
+		return this.generateTopUV(geometry, extrudedShape, extrudeOptions, indexA, indexB, indexC);
+	},
+
+	generateSideWallUV: function(geometry, extrudedShape, wallContour, extrudeOptions, indexA, indexB, indexC, indexD,
+	stepIndex, stepsLength, contourIndex1, contourIndex2) {
+		var ax = geometry.vertices[indexA].x,
+			ay = geometry.vertices[indexA].y,
+			az = geometry.vertices[indexA].z,
+
+			bx = geometry.vertices[indexB].x,
+			by = geometry.vertices[indexB].y,
+			bz = geometry.vertices[indexB].z,
+
+			cx = geometry.vertices[indexC].x,
+			cy = geometry.vertices[indexC].y,
+			cz = geometry.vertices[indexC].z,
+
+			dx = geometry.vertices[indexD].x,
+			dy = geometry.vertices[indexD].y,
+			dz = geometry.vertices[indexD].z;
+
+		var amt = extrudeOptions.amount,
+			bb = extrudedShape.getBoundingBox(),
+			bbx = bb.maxX - bb.minX,
+			bby = bb.maxY - bb.minY;
+
+		if (Math.abs(ay - by) < 0.01) {
+			return [new THREE.Vector2(ax / bbx, az / amt), new THREE.Vector2(bx / bbx, bz / amt),
+			new THREE.Vector2(cx / bbx, cz / amt), new THREE.Vector2(dx / bbx, dz / amt)];
+		} else {
+			return [new THREE.Vector2(ay / bby, az / amt), new THREE.Vector2(by / bby, bz / amt),
+			new THREE.Vector2(cy / bby, cz / amt), new THREE.Vector2(dy / bby, dz / amt)];
+		}
+	}
+};
+
 /**
- * Unfortunately, replacing the f3 method is not possible without copying the whole addShape
+ * Unfortunately, replacing the f3 method is not possible without copying the
+ * whole addShape
  */
 $.ExtrudeGeometry.prototype.addShape = function(shape, options) {
 
@@ -95,7 +270,7 @@ $.ExtrudeGeometry.prototype.addShape = function(shape, options) {
 		// TODO1 - have a .isClosed in spline?
 
 		splineTube = options.frames !== undefined ? options.frames : new THREE.TubeGeometry.FrenetFrames(extrudePath,
-				steps, false);
+		steps, false);
 
 		// console.log(splineTube, 'splineTube', splineTube.normals.length,
 		// 'steps', steps, 'extrudePts', extrudePts.length);
@@ -151,7 +326,7 @@ $.ExtrudeGeometry.prototype.addShape = function(shape, options) {
 		}
 
 		reverse = false; // If vertices are in order now, we shouldn't need
-							// to worry about them again (hopefully)!
+		// to worry about them again (hopefully)!
 
 	}
 
@@ -160,7 +335,7 @@ $.ExtrudeGeometry.prototype.addShape = function(shape, options) {
 	/* Vertices */
 
 	var contour = vertices; // vertices has all points but contour has only
-							// points of circumference
+	// points of circumference
 
 	for (h = 0, hl = holes.length; h < hl; h++) {
 
@@ -172,14 +347,15 @@ $.ExtrudeGeometry.prototype.addShape = function(shape, options) {
 
 	function scalePt2(pt, vec, size) {
 
-		if (!vec)
-			console.log("die");
+		if (!vec) console.log("die");
 
 		return vec.clone().multiplyScalar(size).add(pt);
 
 	}
 
-	var b, bs, t, z, vert, vlen = vertices.length, face, flen = faces.length, cont, clen = contour.length;
+	var b, bs, t, z, vert, vlen = vertices.length,
+		face, flen = faces.length,
+		cont, clen = contour.length;
 
 	// Find directions for point movement
 
@@ -220,7 +396,13 @@ $.ExtrudeGeometry.prototype.addShape = function(shape, options) {
 
 	function getBevelVec2(pt_i, pt_j, pt_k) {
 
-		var a = THREE.ExtrudeGeometry.__v1, b = THREE.ExtrudeGeometry.__v2, v_hat = THREE.ExtrudeGeometry.__v3, w_hat = THREE.ExtrudeGeometry.__v4, p = THREE.ExtrudeGeometry.__v5, q = THREE.ExtrudeGeometry.__v6, v, w, v_dot_w_hat, q_sub_p_dot_w_hat, s, intersection;
+		var a = THREE.ExtrudeGeometry.__v1,
+			b = THREE.ExtrudeGeometry.__v2,
+			v_hat = THREE.ExtrudeGeometry.__v3,
+			w_hat = THREE.ExtrudeGeometry.__v4,
+			p = THREE.ExtrudeGeometry.__v5,
+			q = THREE.ExtrudeGeometry.__v6,
+			v, w, v_dot_w_hat, q_sub_p_dot_w_hat, s, intersection;
 
 		// good reading for line-line intersection
 		// http://sputsoft.com/blog/2010/03/line-line-intersection.html
@@ -239,7 +421,7 @@ $.ExtrudeGeometry.prototype.addShape = function(shape, options) {
 		// normals from pt i
 
 		v_hat.set(-v.y, v.x);
-		w_hat.set(w.y, -w.x);
+		w_hat.set(w.y, - w.x);
 
 		// pts from i
 
@@ -293,18 +475,16 @@ $.ExtrudeGeometry.prototype.addShape = function(shape, options) {
 		intersection = v.multiplyScalar(s).add(p);
 
 		return intersection.sub(pt_i).clone(); // Don't normalize!, otherwise
-												// sharp corners become ugly
+		// sharp corners become ugly
 
 	}
 
 	var contourMovements = [];
 
-	for ( var i = 0, il = contour.length, j = il - 1, k = i + 1; i < il; i++, j++, k++) {
+	for (var i = 0, il = contour.length, j = il - 1, k = i + 1; i < il; i++, j++, k++) {
 
-		if (j === il)
-			j = 0;
-		if (k === il)
-			k = 0;
+		if (j === il) j = 0;
+		if (k === il) k = 0;
 
 		// (j)---(i)---(k)
 		// console.log('i,j,k', i, j , k)
@@ -317,7 +497,8 @@ $.ExtrudeGeometry.prototype.addShape = function(shape, options) {
 
 	}
 
-	var holesMovements = [], oneHoleMovements, verticesMovements = contourMovements.concat();
+	var holesMovements = [],
+		oneHoleMovements, verticesMovements = contourMovements.concat();
 
 	for (h = 0, hl = holes.length; h < hl; h++) {
 
@@ -327,10 +508,8 @@ $.ExtrudeGeometry.prototype.addShape = function(shape, options) {
 
 		for (i = 0, il = ahole.length, j = il - 1, k = i + 1; i < il; i++, j++, k++) {
 
-			if (j === il)
-				j = 0;
-			if (k === il)
-				k = 0;
+			if (j === il) j = 0;
+			if (k === il) k = 0;
 
 			// (j)---(i)---(k)
 			oneHoleMovements[i] = getBevelVec(ahole[i], ahole[j], ahole[k]);
@@ -360,7 +539,7 @@ $.ExtrudeGeometry.prototype.addShape = function(shape, options) {
 
 			vert = scalePt2(contour[i], contourMovements[i], bs);
 			// vert = scalePt( contour[ i ], contourCentroid, bs, false );
-			v(vert.x, vert.y, -z);
+			v(vert.x, vert.y, - z);
 
 		}
 
@@ -376,7 +555,7 @@ $.ExtrudeGeometry.prototype.addShape = function(shape, options) {
 				vert = scalePt2(ahole[i], oneHoleMovements[i], bs);
 				// vert = scalePt( ahole[ i ], holesCentroids[ h ], bs, true );
 
-				v(vert.x, vert.y, -z);
+				v(vert.x, vert.y, - z);
 
 			}
 
@@ -581,20 +760,22 @@ $.ExtrudeGeometry.prototype.addShape = function(shape, options) {
 
 			j = i;
 			k = i - 1;
-			if (k < 0)
-				k = contour.length - 1;
+			if (k < 0) k = contour.length - 1;
 
 			// console.log('b', i,j, i-1, k,vertices.length);
 
-			var s = 0, sl = steps + bevelSegments * 2;
+			var s = 0,
+				sl = steps + bevelSegments * 2;
 
 			for (s = 0; s < sl; s++) {
 
 				var slen1 = vlen * s;
 				var slen2 = vlen * (s + 1);
 
-				var a = layeroffset + j + slen1, b = layeroffset + k + slen1, c = layeroffset + k + slen2, d = layeroffset
-						+ j + slen2;
+				var a = layeroffset + j + slen1,
+					b = layeroffset + k + slen1,
+					c = layeroffset + k + slen2,
+					d = layeroffset + j + slen2;
 
 				f4(a, b, c, d, contour, s, sl, j, k);
 
@@ -618,7 +799,7 @@ $.ExtrudeGeometry.prototype.addShape = function(shape, options) {
 		scope.faces.push(new THREE.Face3(a, b, c, null, null, (isBottom && backMaterial) ? backMaterial : material));
 
 		var uvs = isBottom ? uvgen.generateBottomUV(scope, shape, options, a, b, c) : uvgen.generateTopUV(scope, shape,
-				options, a, b, c);
+		options, a, b, c);
 
 		scope.faceVertexUvs[0].push(uvs);
 
@@ -634,148 +815,8 @@ $.ExtrudeGeometry.prototype.addShape = function(shape, options) {
 		scope.faces.push(new THREE.Face4(a, b, c, d, null, null, extrudeMaterial));
 
 		var uvs = uvgen.generateSideWallUV(scope, shape, wallContour, options, a, b, c, d, stepIndex, stepsLength,
-				contourIndex1, contourIndex2);
+		contourIndex1, contourIndex2);
 		scope.faceVertexUvs[0].push(uvs);
 
 	}
-}
-
-var Util = Util || {
-
-}
-
-Util.createRoundedRectangleShape = function(width, height, radius) {
-	var shape = new THREE.Shape();
-	var hw = width / 2;
-	var hh = height / 2;
-
-	shape.moveTo(-hw + radius, hh);
-	shape.lineTo(hw - radius, hh);
-	shape.quadraticCurveTo(hw, hh, hw, hh - radius);
-	shape.lineTo(hw, -hh + radius);
-	shape.quadraticCurveTo(hw, -hh, hw - radius, -hh);
-	shape.lineTo(-hw + radius, -hh);
-	shape.quadraticCurveTo(-hw, -hh, -hw, -hh + radius);
-	shape.lineTo(-hw, hh - radius);
-	shape.quadraticCurveTo(-hw, hh, -hw + radius, hh);
-
-	return shape;
-}
-
-Util.createCircleShape = function(radius) {
-	var shape = new THREE.Shape();
-
-	shape.moveTo(0, radius);
-	shape.quadraticCurveTo(radius, radius, radius, 0);
-	shape.quadraticCurveTo(radius, -radius, 0, -radius);
-	shape.quadraticCurveTo(-radius, -radius, -radius, 0);
-	shape.quadraticCurveTo(-radius, radius, 0, radius);
-
-	return shape;
-}
-
-Util.shuffle = function(array) {
-	for ( var i = 0; i < array.length; i += 1) {
-		var j = parseInt(Math.random() * array.length);
-		var tmp = array[j];
-		array[j] = array[i];
-		array[i] = tmp;
-	}
-}
-
-Util.schedule = function(f, delay) {
-	new TWEEN.Tween(0).onComplete(f).delay(delay).start();
-}
-
-Util.round = function(value, offset, to) {
-	return Math.round((value - offset) / to) * to + offset;
-}
-
-Util.rotateAroundWorldAxis = function(object, axis, radians) {
-	var rotationMatrix = new THREE.Matrix4();
-
-	rotationMatrix.makeRotationAxis(axis.normalize(), radians);
-	rotationMatrix.multiply(object.matrix); // pre-multiply
-	object.matrix = rotationMatrix;
-	object.rotation.setEulerFromRotationMatrix(object.matrix);
-}
-
-Util.createParticleMaterial = function(texture) {
-	var texture = THREE.ImageUtils.loadTexture(texture);
-	var material = new THREE.MeshBasicMaterial({
-		map : texture,
-		blending : THREE.AdditiveBlending,
-		transparent : true
-	});
-
-	return material;
-}
-
-Util.createTexturedMaterial = function(texture, textureRepeat) {
-	textureRepeat = textureRepeat || 1;
-
-	var texture = THREE.ImageUtils.loadTexture(texture);
-
-	texture.minFilter = texture.magFilter = THREE.LinearFilter;
-	texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-	texture.repeat.set(textureRepeat, textureRepeat);
-
-	var material = new THREE.MeshPhongMaterial({
-		map : texture,
-		specular : 0xffffff,
-		ambient : 0xaaccff
-	});
-
-	return material;
-}
-
-Util.createColoredMaterial = function(materialColor) {
-	return new THREE.MeshPhongMaterial({
-		color : materialColor,
-		specular : 0xffffff,
-		ambient : 0xaaccff
-
-	});
-}
-
-THREE.ExtrudeGeometry.WorldUVGenerator = {
-	generateTopUV : function(geometry, extrudedShape, extrudeOptions, indexA, indexB, indexC) {
-		var ax = geometry.vertices[indexA].x, ay = geometry.vertices[indexA].y,
-
-		bx = geometry.vertices[indexB].x, by = geometry.vertices[indexB].y,
-
-		cx = geometry.vertices[indexC].x, cy = geometry.vertices[indexC].y,
-
-		bb = extrudedShape.getBoundingBox(), bbx = bb.maxX - bb.minX, bby = bb.maxY - bb.minY;
-
-		return [ new THREE.Vector2((ax - bb.minX) / bbx, 1 - (ay - bb.minY) / bby),
-				new THREE.Vector2((bx - bb.minX) / bbx, 1 - (by - bb.minY) / bby),
-				new THREE.Vector2((cx - bb.minX) / bbx, 1 - (cy - bb.minY) / bby) ];
-	},
-
-	generateBottomUV : function(geometry, extrudedShape, extrudeOptions, indexA, indexB, indexC) {
-		return this.generateTopUV(geometry, extrudedShape, extrudeOptions, indexA, indexB, indexC);
-	},
-
-	generateSideWallUV : function(geometry, extrudedShape, wallContour, extrudeOptions, indexA, indexB, indexC, indexD,
-			stepIndex, stepsLength, contourIndex1, contourIndex2) {
-		var ax = geometry.vertices[indexA].x, ay = geometry.vertices[indexA].y, az = geometry.vertices[indexA].z,
-
-		bx = geometry.vertices[indexB].x, by = geometry.vertices[indexB].y, bz = geometry.vertices[indexB].z,
-
-		cx = geometry.vertices[indexC].x, cy = geometry.vertices[indexC].y, cz = geometry.vertices[indexC].z,
-
-		dx = geometry.vertices[indexD].x, dy = geometry.vertices[indexD].y, dz = geometry.vertices[indexD].z;
-
-		var amt = extrudeOptions.amount, bb = extrudedShape.getBoundingBox(), bbx = bb.maxX - bb.minX, bby = bb.maxY
-				- bb.minY;
-
-		if (Math.abs(ay - by) < 0.01) {
-			return [ new THREE.Vector2(ax / bbx, az / amt), new THREE.Vector2(bx / bbx, bz / amt),
-					new THREE.Vector2(cx / bbx, cz / amt), new THREE.Vector2(dx / bbx, dz / amt) ];
-		} else {
-			return [ new THREE.Vector2(ay / bby, az / amt), new THREE.Vector2(by / bby, bz / amt),
-					new THREE.Vector2(cy / bby, cz / amt), new THREE.Vector2(dy / bby, dz / amt) ];
-		}
-	}
-}
+};
