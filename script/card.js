@@ -5,7 +5,7 @@ $.Card = function(frontMaterial, backMaterial, sideMaterial) {
 	var mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial([frontMaterial, backMaterial, sideMaterial]));
 
 	mesh.rotation.x = Math.PI;
-	mesh.rotation.z = Math.PI;
+	//mesh.rotation.z = Math.PI;
 
 	this.add(mesh);
 };
@@ -90,6 +90,46 @@ $.Card.prototype.flyInTween = function(position) {
 	return new TWEEN.Tween(from).to(to, 400 / $.SPEED).onUpdate(update);
 };
 
+
+$.Card.prototype.showTween = function() {
+	var self = this;
+
+	var from = {
+		rot: self.children[0].rotation.y,
+		height: 0
+	};
+	var to = {
+		rot: Util.round(self.children[0].rotation.y - Math.PI, Math.PI, Math.PI * 2),
+		height: Math.PI
+	};
+	var update = function() {
+			self.children[0].position.z = ($.Card.THICKNESS / 2) + Math.sin(this.height) * $.Card.SIZE;
+			self.children[0].rotation.y = this.rot;
+		};
+
+	return new TWEEN.Tween(from).to(to, 250 / $.SPEED).onUpdate(update);
+};
+
+$.Card.prototype.hideTween = function() {
+	var self = this;
+
+	var from = {
+		rot: self.children[0].rotation.y,
+		height: 0
+	};
+	var to = {
+		rot: Util.round(self.children[0].rotation.y - Math.PI, 0, Math.PI * 2),
+		height: Math.PI
+	};
+	var update = function() {
+			self.children[0].position.z = ($.Card.THICKNESS / 2) + Math.sin(this.height) * $.Card.SIZE;
+			self.children[0].rotation.y = this.rot;
+		};
+
+	return new TWEEN.Tween(from).to(to, 250 / $.SPEED).onUpdate(update);
+};
+
+/*
 $.Card.prototype.showTween = function() {
 	var self = this;
 
@@ -113,17 +153,18 @@ $.Card.prototype.hideTween = function() {
 	var self = this;
 
 	var from = {
-		height: 0,
-		rot: self.children[0].rotation.x
+		rot: self.children[0].rotation.x,
+		height: 0
 	};
 	var to = {
-		height: Math.PI,
-		rot: Util.round(self.children[0].rotation.x - Math.PI, Math.PI, Math.PI * 2)
+		rot: Util.round(self.children[0].rotation.x - Math.PI, Math.PI, Math.PI * 2),
+		height: Math.PI
 	};
 	var update = function() {
-			self.children[0].position.z = ($.Card.TICKNESS / 2) + Math.sin(this.height) * $.Card.SIZE;
+			self.children[0].position.z = ($.Card.THICKNESS / 2) + Math.sin(this.height) * $.Card.SIZE;
 			self.children[0].rotation.x = this.rot;
 		};
 
 	return new TWEEN.Tween(from).to(to, 200 / $.SPEED).onUpdate(update);
 };
+*/

@@ -27,7 +27,7 @@ $.init = function() {
 $.animate = function(time) {
 	requestAnimationFrame($.animate);
 
-	time = time / 1000;
+	time = time / 1000 * $.SPEED;
 
 	if ($.lastTime !== 0) {
 		$.WORLD.animate(time, time - $.lastTime);

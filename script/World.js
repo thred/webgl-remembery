@@ -189,7 +189,7 @@ $.World.prototype.onDocumentMouseMove = function(event) {
 	};
 
 	if (this.camera) {
-		this.camera.locateOffset(-this.mouse.y * 0.2, -this.mouse.x * 0.2);
+		this.camera.locateOffset(-this.mouse.y * 0.1, -this.mouse.x * 0.1);
 	}
 };
 

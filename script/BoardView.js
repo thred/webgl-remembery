@@ -44,7 +44,7 @@ $.BoardView.prototype.activate = function() {
 	var tableWidth = (this.controller.boardSize.width + 2) * ($.Card.SIZE + $.Card.SPACING);
 	var tableHeight = (this.controller.boardSize.height + 2) * ($.Card.SIZE + $.Card.SPACING);
 
-	this.boardObject.position.set($.WORLD.camera.position.x, $.WORLD.camera.position.y, - $.WORLD.camera.computeDistance(tableWidth, tableHeight));
+	this.boardObject.position.set($.WORLD.camera.position.x, $.WORLD.camera.position.y, - $.WORLD.camera.computeDistance(fieldWidth, fieldHeight));
 
 	this.activateTable(tableWidth, tableHeight);
 	this.activateCards();
@@ -110,6 +110,7 @@ $.BoardView.prototype.activateCards = function() {
 
 			cardObject.position = this.computeCardStartPosition(x, y);
 			cardObject.rotation.z = (Math.random() - 0.5) * Math.PI / 8;
+			cardObject.index = index;
 
 			this.boardObject.add(cardObject);
 		}
@@ -117,7 +118,15 @@ $.BoardView.prototype.activateCards = function() {
 };
 
 $.BoardView.prototype.onClickCard = function(mesh) {
-	
+	this.controller.onCard(mesh.parent.index);
+};
+
+$.BoardView.prototype.showCard = function(index) {
+	this.cardObjects[index].showTween().start();
+};
+
+$.BoardView.prototype.hideCard = function(index) {
+	this.cardObjects[index].hideTween().start();
 };
 
 $.BoardView.prototype.computeCardPosition = function(x, y) {
