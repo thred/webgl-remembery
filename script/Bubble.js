@@ -1,59 +1,9 @@
-var Firework = Firework || {};
-
-$.Firework = function() {
-	this.objects = [];
-};
-
-$.Firework.prototype.activate = function() {};
-
-$.Firework.prototype.animate = function(time) {
-	if (!this.lastTime) {
-		this.lastTime = time;
-		return;
-	}
-
-	var duration = (time - this.lastTime) / 1000;
-	this.lastTime = time;
-
-	for (var i = 0; i < this.objects.length; i += 1) {
-		this.objects[i].animate(time, duration);
-	}
-};
-
-$.Firework.prototype.bubble = function(position, radius, maxSize) {
-	var bubbleObject = new $.Bubble(this.bubbleBoundsGeometry, this.bubbleBoundsTexture, this.bubbleGeometry, this.bubbleTexture, position, radius, maxSize);
-
-	this.add(bubbleObject);
-};
-
-$.Firework.prototype.add = function(object) {
-	this.objects.push(object);
-	$.scene.add(object);
-};
-
-$.Firework.prototype.remove = function(object) {
-	this.objects.splice(this.objects.indexOf(object), 1);
-	$.scene.remove(object);
-};
-
-$.Firework.prototype.load = function() {
-	this.bubbleBoundsGeometry = new THREE.CircleGeometry(1, 32);
-	this.bubbleBoundsTexture = Util.createParticleMaterial('asset/bubbleBounds.png');
-	this.bubbleBoundsTexture.depthTest = false;
-	this.bubbleGeometry = new THREE.SphereGeometry(1, 16, 8);
-	this.bubbleTexture = Util.createTexturedMaterial('asset/bubble.png', 1, true, 0.5);
-	this.bubbleTexture.blending = THREE.AdditiveBlending;
-	this.bubbleTexture.side = THREE.DoubleSide;
-	this.bubbleTexture.depthTest = false;
-};
-
-$.firework = new $.Firework();
-
-$.Bubble = function(boundsGeometry, boundsTexture, geometry, texture, position, radius, maxSize) {
+$.Bubble = function(view, boundsGeometry, boundsTexture, geometry, texture, position, radius, maxSize) {
 	maxSize = maxSize || 4;
 
 	THREE.Mesh.call(this, boundsGeometry, boundsTexture);
 
+	this.view = view;
 	this.size = Math.random() * (maxSize / 2) + (maxSize / 2);
 	this.direction = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
 	this.position = position.clone().add(this.direction.clone().setLength(radius));
@@ -61,12 +11,12 @@ $.Bubble = function(boundsGeometry, boundsTexture, geometry, texture, position, 
 	this.velocity = 80;
 	this.lifespan = Math.random() * 3;
 	this.randomize(20);
-	this.offset = Math.random() * 100;
+	this.offset = Math.random();
 
 	var boundsMesh = new THREE.Mesh(geometry, texture);
 
 	boundsMesh.rotation = new THREE.Vector3((Math.random() - 0.5) * 4 * Math.PI, (Math.random() - 0.5) * 4 * Math.PI, (Math.random() - 0.5) * 4 * Math.PI);
-	boundsMesh.rotationVelocity = new THREE.Vector3((Math.random() - 0.5), (Math.random() - 0.5), (Math.random() - 0.5));
+	boundsMesh.rotationVelocity = new THREE.Vector3((Math.random() - 0.5) * Math.PI, (Math.random() - 0.5) * Math.PI, (Math.random() - 0.5) * Math.PI);
 
 	this.add(boundsMesh);
 };
@@ -81,9 +31,9 @@ $.Bubble.prototype.animate = function(time, duration) {
 		return;
 	}
 
-	this.lookAt($.camera.position);
-	
-	var sizeDisp = this.size * 0.1 * this.lifespan / 3 * Math.sin((this.offset + time) / 100);
+	this.lookAt($.WORLD.camera.position);
+
+	var sizeDisp = this.size * 0.1 * this.lifespan / 3 * Math.sin((this.offset + time * 10));
 
 	this.scale.x = this.size + sizeDisp;
 	this.scale.y = this.size - sizeDisp;
@@ -119,18 +69,18 @@ $.Bubble.prototype.burst = function() {
 	var rnd = Math.random();
 
 	if (rnd < 0.33) {
-		$.play("bubble0", this.position, this.scale.x / 10);
+		$.WORLD.playSound("bubble0", this.position, this.scale.x / 10);
 	} else if (rnd < 0.66) {
-		$.play("bubble1", this.position, this.scale.x / 10);
+		$.WORLD.playSound("bubble1", this.position, this.scale.x / 10);
 	} else {
-		$.play("bubble2", this.position, this.scale.x / 10);
+		$.WORLD.playSound("bubble2", this.position, this.scale.x / 10);
 	}
 
-	$.firework.remove(this);
+	this.view.removeObject(this);
 
 	if (this.scale.x > 3) {
 		for (var i = 0; i < 10; i += 1) {
-			$.firework.bubble(this.position, this.scale.x, this.scale.x / 3);
+			this.view.bubble(this.position, this.scale.x, this.scale.x / 3);
 		}
 	}
 };

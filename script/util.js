@@ -1,6 +1,6 @@
 THREE.Camera.prototype.computeDistance = function(width, height) {
-	var ratio = (width / height) / (window.innerWidth / window.innerHeight);
-	return (height * Math.max(1, ratio) / 2) * (1 / Math.tan(Math.PI * $.fov / 360)) * 1.2;
+	var ratio = (width / height) / ($.WORLD.windowSize.width / $.WORLD.windowSize.height);
+	return (height * Math.max(1, ratio) / 2) * (1 / Math.tan(Math.PI * this.fov / 360)) * 1.2;
 };
 
 THREE.Camera.prototype.locate = function(lookingAt, direction, distance, theta) {
@@ -106,8 +106,10 @@ Util.shuffle = function(array) {
 	}
 };
 
-Util.schedule = function(f, delay) {
-	new TWEEN.Tween(0).onComplete(f).delay(delay).start();
+Util.schedule = function(object, func, delay) {
+	new TWEEN.Tween(0).onComplete(function() {
+		func.call(object);
+	}).delay(delay / $.SPEED).start();
 };
 
 Util.round = function(value, offset, to) {

@@ -1,5 +1,5 @@
 $.Board = function() {
-	this.NUMBER_OF_CARDS = 25;
+	this.controller = new $.Controller(this);
 };
 
 $.Board.prototype.setBoardSize = function(boardWidth, boardHeight) {
@@ -17,16 +17,17 @@ $.Board.prototype.activate = function() {
 	var tableWidth = (this.boardSize.width + 2) * ($.CARD_SIZE + $.CARD_SPACING);
 	var tableHeight = (this.boardSize.height + 2) * ($.CARD_SIZE + $.CARD_SPACING);
 
-	this.offset = new THREE.Vector3($.camera.x, $.camera.y, - $.camera.computeDistance(tableWidth, tableHeight));
+	this.boardObject.position.set($.camera.position.x, $.camera.position.y, - $.camera.computeDistance(tableWidth, tableHeight));
 	this.tableObject = this.createTableObject(tableWidth, tableHeight);
-
-	$.scene.add(this.tableObject);
+	this.tableObject.setVisible(false);
+	this.boardObject.add(this.tableObject);
 
 	this.initCardDatas();
 
-	this.tableObject.growTween(2000 * $.SPEED).delay(1000 * $.SPEED).start();
+	this.boardObject.growTween(2000 * $.SPEED).delay(1000 * $.SPEED).start();
 
 	var delay = 2000 * $.SPEED;
+	/*
 	for (var y = this.boardSize.height - 1; y >= 0; y -= 1) {
 		for (var x = this.boardSize.width - 1; x >= 0; x -= 1) {
 			var i = x + y * this.boardSize.width;
@@ -37,6 +38,7 @@ $.Board.prototype.activate = function() {
 			delay += 50 * $.SPEED;
 		}
 	}
+	*/
 
 	delay += 100 * $.SPEED;
 
@@ -49,24 +51,18 @@ $.Board.prototype.activate = function() {
 			cardObject.flyInTween(position).delay(delay + 1000 * $.SPEED).start();
 
 			delay += 100 * $.SPEED;
+
+			$.addClickable(cardObject.children[0], this.controller, this.controller.onClickCard);
 		}
 	}
 
 	delay += 2000 * $.SPEED;
 
-	$.camera.locateTween(new THREE.Vector3(this.offset.x, this.offset.y, this.offset.z), Math.PI / 16 * 7, - this.offset.z, 0,
+	$.camera.locateTween(new THREE.Vector3(this.boardObject.position.x, this.boardObject.position.y, this.boardObject.position.z), Math.PI / 16 * 7, - this.boardObject.position.z, 0,
 	1000 * $.SPEED).onComplete(function() {
-		$.camera.locateTween(new THREE.Vector3(self.offset.x, self.offset.y - fieldHeight * 0.1, self.offset.z), [-Math.PI / 8 * 3, Math.PI / 8 * 3], $.camera.computeDistance(fieldWidth, fieldHeight), Math.PI * 2,
+		$.camera.locateTween(new THREE.Vector3(self.boardObject.position.x, self.boardObject.position.y - fieldHeight * 0.1, self.boardObject.position.z), [-Math.PI / 8 * 3, Math.PI / 8 * 3], $.camera.computeDistance(fieldWidth, fieldHeight), Math.PI * 2,
 		delay).start();
 	}).start();
-	//	$.camera.locateTween(new THREE.Vector3(0, 0, this.zOffset), Math.PI / 2, $.camera.computeDistance(fieldWidth, fieldHeight), 0,
-	//	1000 * $.SPEED).onComplete(function() {
-	//		$.camera.locateTween(new THREE.Vector3(0, 0, self.zOffset), Math.PI / 16, $.camera.computeDistance(fieldWidth, fieldHeight), 0,
-	//		delay / 2).onComplete(function() {
-	//			$.camera.locateTween(new THREE.Vector3(0, - $.CARD_SIZE / 2, self.zOffset), Math.PI / 8 * 3, $.camera.computeDistance(fieldWidth, fieldHeight), 0,
-	//			1000 * $.SPEED).delay(delay / 2).start();
-	//		}).start();
-	//	}).start();
 };
 
 $.Board.prototype.animate = function(time) {};
@@ -112,77 +108,3 @@ $.Board.prototype.initCardDatas = function() {
 	}
 };
 
-$.Board.prototype.computeCardPosition = function(x, y) {
-	var index = x + this.boardSize.width * y;
-	var ox = ($.CARD_SIZE + $.CARD_SPACING) * (x - ((this.boardSize.width - 1) / 2));
-	var oy = -($.CARD_SIZE + $.CARD_SPACING) * (y - ((this.boardSize.height - 1) / 2));
-
-	return new THREE.Vector3(this.offset.x + ox, this.offset.y + oy, this.offset.z + $.CARD_THICKNESS);
-};
-
-$.Board.prototype.computeCardStartPosition = function(x, y) {
-	var index = x + this.boardSize.width * y;
-	var oy = -($.CARD_SIZE + $.CARD_SPACING) * (this.boardSize.height - ((this.boardSize.height - 1) / 2));
-
-	return new THREE.Vector3(this.offset.x, this.offset.y + oy, this.offset.z + $.CARD_THICKNESS / 2 + $.CARD_THICKNESS * ((this.boardSize.width * this.boardSize.height) - index));
-};
-
-$.Board.prototype.load = function() {
-	this.tableObject = this.loadTable();
-	$.scene.add(this.tableObject);
-
-	this.loadCards();
-};
-
-$.Board.prototype.loadTable = function() {
-	this.tableFrontMaterial = Util.createTexturedMaterial("asset/table.png", 10);
-	this.tableSideMaterial = Util.createColoredMaterial(0xff0000);
-};
-
-$.Board.prototype.createTableObject = function(width, height) {
-	var geometry = new THREE.ExtrudeGeometry(Util.createRoundedRectangleShape(width, height, 6), {
-		amount: 2,
-		bevelSegments: 2,
-		steps: 2,
-		bevelSize: 1,
-		bevelThickness: 1,
-		material: 0,
-		extrudeMaterial: 1
-	});
-
-	geometry.computeFaceNormals();
-	geometry.computeVertexNormals();
-	geometry.computeTangents();
-	geometry.computeBoundingBox();
-	THREE.GeometryUtils.center(geometry);
-
-	var mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial([this.tableFrontMaterial, this.tableSideMaterial]));
-
-	mesh.setVisible(false);
-	mesh.position.set(this.offset.x, this.offset.y, this.offset.z - 1);
-
-	return mesh;
-};
-
-$.Board.prototype.loadCards = function() {
-	var cardBackMaterial = Util.createTexturedMaterial('asset/cardback.png', 2);
-	var cardSideMaterial = Util.createColoredMaterial(0x808080);
-
-	this.cardObjects = [];
-
-	for (var i = 0; i < this.NUMBER_OF_CARDS; i += 1) {
-		var cardFrontMaterial = Util.createTexturedMaterial('asset/memory' + (i % 22) + ".jpg", 1);
-
-		for (var j = 0; j < 2; j += 1) {
-			var cardObject = new $.Card(cardFrontMaterial, cardBackMaterial, cardSideMaterial);
-
-			cardObject.setVisible(false);
-
-			this.cardObjects[i * 2 + j] = cardObject;
-
-			$.scene.add(cardObject);
-		}
-	}
-};
-
-$.register("board", new $.Board());
