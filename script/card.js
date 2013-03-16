@@ -129,6 +129,60 @@ $.Card.prototype.hideTween = function() {
 	return new TWEEN.Tween(from).to(to, 250 / $.SPEED).onUpdate(update);
 };
 
+$.Card.prototype.collectTween = function(position) {
+	var self = this;
+
+	var from = {
+		posX: self.position.x,
+		posY: self.position.y,
+		posZ: self.position.z,
+		rot: self.rotation.z
+	};
+	var to = {
+		posX: position.x,
+		posY: position.y,
+		posZ: position.z,
+		rot: Util.round(self.rotation.z + 4 * Math.PI, 0, Math.PI * 2)
+	};
+	var start = function() {
+			$.WORLD.addClickBlock();
+		};
+	var update = function() {
+			self.position.set(this.posX, this.posY, this.posZ);
+			self.rotation.z = this.rot;
+		};
+	var complete = function() {
+			$.WORLD.removeClickBlock();
+		};
+
+	return new TWEEN.Tween(from).to(to, 500 / $.SPEED).easing(TWEEN.Easing.Cubic.Out).onStart(start).onUpdate(update).onComplete(complete);
+};
+
+$.Card.prototype.stackTween = function(position) {
+	var self = this;
+
+	var from = {
+		posX: self.position.x,
+		posY: self.position.y,
+		posZ: self.position.z,
+		rot: self.rotation.z,
+		height: 0
+	};
+	var to = {
+		posX: position.x,
+		posY: position.y,
+		posZ: position.z,
+		rot: Util.round(self.rotation.z + 4 * Math.PI, 0, Math.PI * 2) + (Math.random() - 0.5) * Math.PI / 8,
+		height: Math.PI
+	};
+	var update = function() {
+			self.position.set(this.posX, this.posY, this.posZ + Math.sin(this.height) * $.Card.SIZE);
+			self.rotation.z = this.rot;
+		};
+
+	return new TWEEN.Tween(from).to(to, 500 / $.SPEED).easing(TWEEN.Easing.Cubic.Out).onUpdate(update);
+};
+
 /*
 $.Card.prototype.showTween = function() {
 	var self = this;

@@ -44,7 +44,7 @@ $.BoardView.prototype.activate = function() {
 	var tableWidth = (this.controller.boardSize.width + 2) * ($.Card.SIZE + $.Card.SPACING);
 	var tableHeight = (this.controller.boardSize.height + 2) * ($.Card.SIZE + $.Card.SPACING);
 
-	this.boardObject.position.set($.WORLD.camera.position.x, $.WORLD.camera.position.y, - $.WORLD.camera.computeDistance(fieldWidth, fieldHeight));
+	this.boardObject.position.set($.WORLD.camera.position.x, - 7, - $.WORLD.camera.computeDistance(fieldWidth, fieldHeight));
 
 	this.activateTable(tableWidth, tableHeight);
 	this.activateCards();
@@ -74,6 +74,8 @@ $.BoardView.prototype.activate = function() {
 		$.WORLD.camera.locateTween(new THREE.Vector3(self.boardObject.position.x, self.boardObject.position.y - fieldHeight * 0.1, self.boardObject.position.z), [-Math.PI / 8 * 3, Math.PI / 8 * 3], $.WORLD.camera.computeDistance(fieldWidth, fieldHeight), Math.PI * 2,
 		delay).start();
 	}).start();
+
+	this.stackSize = 0;
 };
 
 $.BoardView.prototype.activateTable = function(width, height) {
@@ -129,6 +131,29 @@ $.BoardView.prototype.hideCard = function(index) {
 	this.cardObjects[index].hideTween().start();
 };
 
+$.BoardView.prototype.collectCard = function(index, offset) {
+	var directionX = Math.cos($.WORLD.camera.direction);
+	var directionY = Math.sin($.WORLD.camera.direction);
+	var vector = new THREE.Vector3(Math.sin($.WORLD.camera.theta + Math.PI) * directionX, Math.cos($.WORLD.camera.theta + Math.PI) * directionX, directionY).setLength($.WORLD.camera.distance / 2);
+	var position = new THREE.Vector3($.WORLD.camera.lookingAt.x + vector.x, $.WORLD.camera.lookingAt.y + vector.y, $.WORLD.camera.lookingAt.z + vector.z);
+
+	position.sub(this.boardObject.position);
+
+	var x = -0.5 + offset;
+
+	position.x += x * ($.Card.SIZE + $.Card.SPACING);
+
+	this.cardObjects[index].collectTween(position).start();
+	$.WORLD.removeClickable(this.cardObjects[index].children[0]);
+};
+
+$.BoardView.prototype.stackCard = function(index, offset) {
+	var position = this.computeCardStackPosition(this.controller.boardSize.width, 1, this.stackSize);
+
+	this.cardObjects[index].stackTween(position).start();
+	this.stackSize += 1;
+};
+
 $.BoardView.prototype.computeCardPosition = function(x, y) {
 	var index = x + this.controller.boardSize.width * y;
 	var ox = ($.Card.SIZE + $.Card.SPACING) * (x - ((this.controller.boardSize.width - 1) / 2));
@@ -142,4 +167,12 @@ $.BoardView.prototype.computeCardStartPosition = function(x, y) {
 	var oy = -($.Card.SIZE + $.Card.SPACING) * (this.controller.boardSize.height - ((this.controller.boardSize.height - 1) / 2));
 
 	return new THREE.Vector3(0, oy, $.Card.THICKNESS / 2 + $.Card.THICKNESS * ((this.controller.boardSize.width * this.controller.boardSize.height) - index));
+};
+
+$.BoardView.prototype.computeCardStackPosition = function(x, y, stackSize) {
+	var index = x + this.controller.boardSize.width * y;
+	var ox = ($.Card.SIZE + $.Card.SPACING) * (x - ((this.controller.boardSize.width - 1) / 2));
+	var oy = -($.Card.SIZE + $.Card.SPACING) * (y - ((this.controller.boardSize.height - 1) / 2));
+
+	return new THREE.Vector3(ox, oy, $.Card.THICKNESS / 2 + $.Card.THICKNESS * stackSize);
 };

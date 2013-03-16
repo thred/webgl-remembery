@@ -36,10 +36,10 @@ $.SizeController.prototype.inactivate = function() {
 };
 
 $.SizeController.prototype.onSelect = function(index) {
-	$.MAIN.boardController.boardSize = this.BOARD_SIZES[index];
+	$.MAIN.getController("board").boardSize = this.BOARD_SIZES[index];
 
 	$.MAIN.schedule(this, function() {
-		this.inactivate();
-		$.MAIN.boardController.activate();
+		$.MAIN.inactivateController("size");
+		$.MAIN.activateController("board");
 	}, 250);
 };

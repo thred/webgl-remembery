@@ -136,7 +136,7 @@ THREE.Object3D.prototype.blowTween = function(bubbles, radius) {
 			}
 
 			for (var i = 0; i < bubbles; i += 1) {
-				$.MAIN.fireworkController.bubble(self.position, radius);
+				$.MAIN.getController("firework").bubble(self.position, radius);
 			}
 		};
 

@@ -1,8 +1,11 @@
 $.Main = function() {
-	this.fireworkController = new $.FireworkController();
-	this.introController = new $.IntroController();
-	this.sizeController = new $.SizeController();
-	this.boardController = new $.BoardController();
+	this.controllers = {
+		"firework": new $.FireworkController(),
+		"intro": new $.IntroController(),
+		"size": new $.SizeController(),
+		"board": new $.BoardController()
+	};
+	this.activeControllers = [];
 };
 
 $.Main.prototype.load = function() {
@@ -12,15 +15,39 @@ $.Main.prototype.load = function() {
 	$.WORLD.addSound("spring", "asset/spring.ogg");
 	$.WORLD.addSound("grow", "asset/grow.ogg");
 
-	this.fireworkController.load();
-	this.introController.load();
-	this.sizeController.load();
-	this.boardController.load();
+	for (var name in this.controllers) {
+		this.controllers[name].load();
+	}
 };
 
-$.Main.prototype.activate = function() {
-	this.fireworkController.activate();
-	this.introController.activate();
+$.Main.prototype.start = function() {
+	this.activateController("firework");
+	this.activateController("intro");
+};
+
+$.Main.prototype.getController = function(controllerName) {
+	return this.controllers[controllerName];
+};
+
+$.Main.prototype.activateController = function(controllerName) {
+	var controller = this.getController(controllerName);
+
+	this.activeControllers.push(controller);
+	controller.activate();
+};
+
+$.Main.prototype.inactivateController = function(controllerName) {
+	var controller = this.getController(controllerName);
+
+	this.activeControllers.splice(this.activeControllers.indexOf(controller), 1);
+	controller.inactivate();
+};
+
+$.Main.prototype.animate = function(time, duration) {
+	for (var i = 0; i < this.activeControllers.length; i += 1) {
+		this.activeControllers[i].time = time;
+		this.activeControllers[i].animate(time, duration);
+	}
 };
 
 $.Main.prototype.schedule = function(object, func, delay) {

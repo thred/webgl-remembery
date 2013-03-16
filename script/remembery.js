@@ -3,10 +3,10 @@ var $ = $ || {
 };
 
 $.init = function() {
-	$.SPEED = 1;
+	$.SPEED = 2;
 	$.WORLD = new $.World();
 	$.MAIN = new $.Main();
-	$.lastTime = 0;
+	$.lastTime = new Date().getTime();
 
 	document.addEventListener('mousedown', function(event) {
 		$.WORLD.onDocumentMouseDown.call($.WORLD, event);
@@ -21,18 +21,19 @@ $.init = function() {
 	}, false);
 
 	$.MAIN.load();
-	$.MAIN.activate();
+	$.MAIN.start();
 };
 
 $.animate = function(time) {
 	requestAnimationFrame($.animate);
 
 	time = time / 1000 * $.SPEED;
-
-	if ($.lastTime !== 0) {
-		$.WORLD.animate(time, time - $.lastTime);
-		TWEEN.update();
-	}
+	var duration = time - $.lastTime;
+	
+	$.MAIN.animate(time, duration);
+	$.WORLD.animate(time, duration);
+	
+	TWEEN.update();
 
 	$.lastTime = time;
 };

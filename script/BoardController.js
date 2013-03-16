@@ -14,6 +14,13 @@ $.BoardController.prototype.STATE_ONE = 1;
 
 $.BoardController.prototype.STATE_TWO = 2;
 
+$.BoardController.prototype.STATE_COLLECT = 3;
+
+$.BoardController.prototype.STATE_FINISHED = 4;
+
+$.BoardController.prototype.POINTS_PER_COUNT = [50, 50, 50, 25, 15, 10, 5];
+
+
 $.BoardController.prototype.load = function() {
 	this.view.load();
 };
@@ -21,6 +28,8 @@ $.BoardController.prototype.load = function() {
 $.BoardController.prototype.activate = function() {
 	this.state = this.STATE_NONE;
 	this.selected = [-1, - 1];
+	this.points = 0;
+	this.remaining = this.boardSize.width * this.boardSize.height;
 
 	this.initCardDatas();
 
@@ -60,34 +69,64 @@ $.BoardController.prototype.initCardDatas = function() {
 };
 
 $.BoardController.prototype.onClick = function() {
-	if (this.state !== this.STATE_TWO) {
-		return false;
+	if (this.state === this.STATE_TWO) {
+		if (this.cardDatas[this.selected[0]].cardId === this.cardDatas[this.selected[1]].cardId) {
+			this.onHit();
+		} else {
+			this.onMiss();
+		}
+
+		return true;
+	} else if (this.state === this.STATE_COLLECT) {
+		this.onStack();
+
+		return true;
 	}
 
-	if (this.cardDatas[this.selected[0]].cardId === this.cardDatas[this.selected[1]].cardId) {
-		this.onHit();
-	} else {
-		this.onMiss();
-	}
-
-	return true;
+	return false;
 };
 
-$.BoardController.prototype.onHit = function() {};
+$.BoardController.prototype.onHit = function() {
+	for (var i = 0; i < this.selected.length; i += 1) {
+		var cardData = this.cardDatas[this.selected[i]];
+
+		cardData.shown = false;
+		this.view.collectCard(cardData.objectIndex, i);
+
+		this.points += this.POINTS_PER_COUNT[(cardData.count < this.POINTS_PER_COUNT.length) ? cardData.count : this.POINTS_PER_COUNT.length - 1];
+		this.remaining -= 1;
+	}
+
+	this.setState(this.STATE_COLLECT);
+};
+
+$.BoardController.prototype.onStack = function() {
+	for (var i = 0; i < this.selected.length; i += 1) {
+		var cardData = this.cardDatas[this.selected[i]];
+
+		this.view.stackCard(cardData.objectIndex, i);
+	}
+
+	if (this.remaining === 0) {
+		this.setState(this.STATE_FINISHED);
+
+		$.MAIN.schedule(this, function() {
+			$.message(this.points);
+		}, 250);
+	} else {
+		this.setState(this.STATE_NONE);
+	}
+};
 
 $.BoardController.prototype.onMiss = function() {
 	for (var i = 0; i < this.selected.length; i += 1) {
 		var cardData = this.cardDatas[this.selected[i]];
 
-		if (!cardData.shown) {
-			continue;
-		}
-
 		cardData.shown = false;
 		this.view.hideCard(cardData.objectIndex);
 	}
 
-	this.state = this.STATE_NONE;
+	this.setState(this.STATE_NONE);
 };
 
 $.BoardController.prototype.onCard = function(dataIndex) {
@@ -99,9 +138,10 @@ $.BoardController.prototype.onCard = function(dataIndex) {
 		}
 
 		cardData.shown = true;
+		cardData.count += 1;
 		this.view.showCard(cardData.objectIndex);
-		this.state = this.STATE_ONE;
 		this.selected[0] = dataIndex;
+		this.setState(this.STATE_ONE);
 
 		return true;
 	}
@@ -112,12 +152,28 @@ $.BoardController.prototype.onCard = function(dataIndex) {
 		}
 
 		cardData.shown = true;
+		cardData.count += 1;
 		this.view.showCard(cardData.objectIndex);
-		this.state = this.STATE_TWO;
 		this.selected[1] = dataIndex;
+		this.setState(this.STATE_TWO);
 
 		return true;
 	}
 
 	return false;
+};
+
+$.BoardController.prototype.setState = function(state) {
+	this.state = state;
+	this.stateTime = this.time;
+};
+
+$.BoardController.prototype.animate = function(time, duration) {
+	var stateDuration = time - this.stateTime;
+
+	if ((this.state === this.STATE_TWO) && (stateDuration > 2)) {
+		this.onClick();
+	} else if ((this.state === this.STATE_COLLECT) && (stateDuration > 5)) {
+		this.onClick();
+	}
 };

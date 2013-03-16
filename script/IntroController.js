@@ -20,7 +20,7 @@ $.IntroController.prototype.inactivate = function() {
 
 $.IntroController.prototype.onPlay = function() {
 	$.MAIN.schedule(this, function() {
-		this.inactivate();
-		$.MAIN.sizeController.activate();
+		$.MAIN.inactivateController("intro");
+		$.MAIN.activateController("size");
 	}, 250);
 };
