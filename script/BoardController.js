@@ -18,7 +18,7 @@ $.BoardController.prototype.STATE_COLLECT = 3;
 
 $.BoardController.prototype.STATE_FINISHED = 4;
 
-$.BoardController.prototype.POINTS_PER_COUNT = [50, 50, 50, 25, 15, 10, 5];
+$.BoardController.prototype.SCORE_PER_COUNT = [50, 50, 50, 25, 15, 10, 5];
 
 
 $.BoardController.prototype.load = function() {
@@ -28,13 +28,17 @@ $.BoardController.prototype.load = function() {
 $.BoardController.prototype.activate = function() {
 	this.state = this.STATE_NONE;
 	this.selected = [-1, - 1];
-	this.points = 0;
+	this.score = 0;
 	this.remaining = this.boardSize.width * this.boardSize.height;
 
 	this.initCardDatas();
 
 	$.WORLD.addView(this.view);
 	$.WORLD.setClick(this, this.onClick);
+};
+
+$.BoardController.prototype.inactivate = function() {
+	$.WORLD.removeView(this.view);
 };
 
 $.BoardController.prototype.initCardDatas = function() {
@@ -93,7 +97,7 @@ $.BoardController.prototype.onHit = function() {
 		cardData.shown = false;
 		this.view.collectCard(cardData.objectIndex, i);
 
-		this.points += this.POINTS_PER_COUNT[(cardData.count < this.POINTS_PER_COUNT.length) ? cardData.count : this.POINTS_PER_COUNT.length - 1];
+		this.score += this.SCORE_PER_COUNT[(cardData.count < this.SCORE_PER_COUNT.length) ? cardData.count : this.SCORE_PER_COUNT.length - 1];
 		this.remaining -= 1;
 	}
 
@@ -110,9 +114,13 @@ $.BoardController.prototype.onStack = function() {
 	if (this.remaining === 0) {
 		this.setState(this.STATE_FINISHED);
 
-		$.MAIN.schedule(this, function() {
-			$.message(this.points);
-		}, 250);
+		var controller = $.MAIN.getController("score");
+
+		controller.score = this.score;
+		controller.maxScore = this.SCORE_PER_COUNT[0] * this.boardSize.width * this.boardSize.height;
+
+
+		$.MAIN.activateController("score");
 	} else {
 		this.setState(this.STATE_NONE);
 	}

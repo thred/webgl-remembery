@@ -2270,8 +2270,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.9729947"
-     inkscape:cx="271.72395"
-     inkscape:cy="664.88715"
+     inkscape:cx="309.75088"
+     inkscape:cy="611.4439"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -5284,7 +5284,7 @@
        inkscape:export-filename="C:\home\dev\html\workspace\webgl-remembery\asset\digit1.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"
-       transform="translate(-144,-344)">
+       transform="matrix(1,0,0,-1,-144,1088.7244)">
       <rect
          y="684.36218"
          x="-304"
@@ -5371,7 +5371,7 @@
        inkscape:export-filename="C:\home\dev\html\workspace\webgl-remembery\asset\digit2.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"
-       transform="translate(-144,-344)">
+       transform="matrix(1,0,0,-1,-144,1232.7244)">
       <rect
          style="color:#000000;fill:url(#linearGradient5350);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.29999995;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
          id="rect5332"
@@ -5528,7 +5528,7 @@
        inkscape:export-filename="C:\home\dev\html\workspace\webgl-remembery\asset\digit0.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"
-       transform="translate(-144,-344)">
+       transform="matrix(1,0,0,-1,-144,944.72437)">
       <rect
          style="color:#000000;fill:url(#linearGradient5288);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.29999995;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
          id="rect5232"
@@ -5662,7 +5662,7 @@
        inkscape:export-filename="C:\home\dev\html\workspace\webgl-remembery\asset\digit5.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"
-       transform="translate(-144,-344)">
+       transform="matrix(1,0,0,-1,-144,1088.7244)">
       <rect
          style="color:#000000;fill:url(#linearGradient5446);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.29999995;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
          id="rect5390"
@@ -6024,7 +6024,7 @@
        inkscape:export-filename="C:\home\dev\html\workspace\webgl-remembery\asset\digit7.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"
-       transform="translate(-144,-344)">
+       transform="matrix(1,0,0,-1,-144,1376.7244)">
       <rect
          style="color:#000000;fill:url(#linearGradient5450);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.29999995;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
          id="rect5426"
@@ -6108,7 +6108,7 @@
        inkscape:export-filename="C:\home\dev\html\workspace\webgl-remembery\asset\digit6.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"
-       transform="translate(-144,-344)">
+       transform="matrix(1,0,0,-1,-144,1232.7244)">
       <rect
          y="756.36218"
          x="-232"
@@ -6364,7 +6364,7 @@
        inkscape:export-filename="C:\home\dev\html\workspace\webgl-remembery\asset\digit3.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"
-       transform="translate(-144,-344)">
+       transform="matrix(1,0,0,-1,-144,1376.7244)">
       <rect
          y="828.36218"
          x="-304"
@@ -6848,7 +6848,7 @@
        inkscape:export-filename="C:\home\dev\html\workspace\webgl-remembery\asset\digit4.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"
-       transform="translate(-144,-344)">
+       transform="matrix(1,0,0,-1,-144,944.72437)">
       <rect
          y="612.36218"
          x="-232"
@@ -6994,7 +6994,7 @@
        inkscape:export-filename="C:\home\dev\html\workspace\webgl-remembery\asset\digit8.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"
-       transform="translate(-144,-344)">
+       transform="matrix(1,0,0,-1,-144,944.72437)">
       <rect
          style="color:#000000;fill:url(#linearGradient5524);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.29999995;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
          id="rect5452"
@@ -7232,7 +7232,7 @@
        inkscape:export-filename="C:\home\dev\html\workspace\webgl-remembery\asset\digit9.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"
-       transform="translate(-144,-344)">
+       transform="matrix(1,0,0,-1,-144,1088.7244)">
       <rect
          y="684.36218"
          x="-160"
@@ -7377,7 +7377,7 @@
        inkscape:export-filename="C:\home\dev\html\workspace\webgl-remembery\asset\slash.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"
-       transform="translate(-144,-344)">
+       transform="matrix(1,0,0,-1,-144,1376.7244)">
       <rect
          style="color:#000000;fill:url(#linearGradient4441);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.29999995;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
          id="rect4286"
@@ -7656,5 +7656,12 @@
        inkscape:export-filename="C:\home\dev\html\workspace\webgl-remembery\asset\bubble.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
+    <rect
+       style="color:#000000;fill:#ffdd55;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect4110"
+       width="128"
+       height="128"
+       x="784"
+       y="556.36218" />
   </g>
 </svg>

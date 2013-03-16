@@ -3,7 +3,7 @@ var $ = $ || {
 };
 
 $.init = function() {
-	$.SPEED = 2;
+	$.SPEED = 1;
 	$.WORLD = new $.World();
 	$.MAIN = new $.Main();
 	$.lastTime = new Date().getTime();

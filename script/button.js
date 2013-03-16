@@ -26,6 +26,7 @@ $.Button.prototype.createGeometry = function() {
 		bevelSize: 0.01,
 		bevelThickness: 0.01,
 		material: 0,
+		backMaterial: 1,
 		extrudeMaterial: 1
 	});
 

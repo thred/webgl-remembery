@@ -44,7 +44,7 @@ $.BoardView.prototype.activate = function() {
 	var tableWidth = (this.controller.boardSize.width + 2) * ($.Card.SIZE + $.Card.SPACING);
 	var tableHeight = (this.controller.boardSize.height + 2) * ($.Card.SIZE + $.Card.SPACING);
 
-	this.boardObject.position.set($.WORLD.camera.position.x, - 7, - $.WORLD.camera.computeDistance(fieldWidth, fieldHeight));
+	this.boardObject.position.set(0, - 7, - $.WORLD.camera.computeDistance(fieldWidth, fieldHeight));
 
 	this.activateTable(tableWidth, tableHeight);
 	this.activateCards();
@@ -166,7 +166,7 @@ $.BoardView.prototype.computeCardStartPosition = function(x, y) {
 	var index = x + this.controller.boardSize.width * y;
 	var oy = -($.Card.SIZE + $.Card.SPACING) * (this.controller.boardSize.height - ((this.controller.boardSize.height - 1) / 2));
 
-	return new THREE.Vector3(0, oy, $.Card.THICKNESS / 2 + $.Card.THICKNESS * ((this.controller.boardSize.width * this.controller.boardSize.height) - index));
+	return new THREE.Vector3(0, oy, $.Card.THICKNESS * ((this.controller.boardSize.width * this.controller.boardSize.height) - index));
 };
 
 $.BoardView.prototype.computeCardStackPosition = function(x, y, stackSize) {
@@ -174,5 +174,5 @@ $.BoardView.prototype.computeCardStackPosition = function(x, y, stackSize) {
 	var ox = ($.Card.SIZE + $.Card.SPACING) * (x - ((this.controller.boardSize.width - 1) / 2));
 	var oy = -($.Card.SIZE + $.Card.SPACING) * (y - ((this.controller.boardSize.height - 1) / 2));
 
-	return new THREE.Vector3(ox, oy, $.Card.THICKNESS / 2 + $.Card.THICKNESS * stackSize);
+	return new THREE.Vector3(ox, oy, $.Card.THICKNESS * stackSize);
 };

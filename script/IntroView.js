@@ -115,6 +115,9 @@ $.IntroView.prototype.activate = function() {
 	$.WORLD.addClickable(this.playButtonObject.children[0], this, this.onPlayButtonClick);
 };
 
+$.IntroView.prototype.inactivate = function() {
+};
+
 $.IntroView.prototype.onLetterClick = function(mesh) {
 	$.WORLD.removeClickable(mesh);
 	mesh.parent.blowTween().start();
@@ -131,7 +134,7 @@ $.IntroView.prototype.onPlayButtonClick = function(mesh) {
 			$.WORLD.removeClickable(this.letterObjects[i].children[0]);
 		}
 	}
-	
+
 	this.controller.onPlay();
 };
 

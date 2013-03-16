@@ -3,7 +3,8 @@ $.Main = function() {
 		"firework": new $.FireworkController(),
 		"intro": new $.IntroController(),
 		"size": new $.SizeController(),
-		"board": new $.BoardController()
+		"board": new $.BoardController(),
+		"score": new $.ScoreController()
 	};
 	this.activeControllers = [];
 };

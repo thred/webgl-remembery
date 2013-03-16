@@ -56,6 +56,11 @@ $.SizeView.prototype.activate = function() {
 	}
 };
 
+$.SizeView.prototype.inactivate = function() {
+	$.WORLD.removeAllClickables();
+	$.WORLD.clearClick();
+};
+
 $.SizeView.prototype.onButtonClick = function(mesh) {
 	$.WORLD.removeClickable(mesh);
 	mesh.parent.blowTween().start();
