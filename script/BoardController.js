@@ -101,6 +101,8 @@ $.BoardController.prototype.onHit = function() {
 		this.remaining -= 1;
 	}
 
+	$.WORLD.playSound("yeah");
+	
 	this.setState(this.STATE_COLLECT);
 };
 
@@ -131,7 +133,7 @@ $.BoardController.prototype.onMiss = function() {
 		var cardData = this.cardDatas[this.selected[i]];
 
 		cardData.shown = false;
-		this.view.hideCard(cardData.objectIndex);
+		this.view.hideCard(cardData.objectIndex, i);
 	}
 
 	this.setState(this.STATE_NONE);

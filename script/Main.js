@@ -15,6 +15,9 @@ $.Main.prototype.load = function() {
 	$.WORLD.addSound("bubble2", "asset/bubble2.ogg");
 	$.WORLD.addSound("spring", "asset/spring.ogg");
 	$.WORLD.addSound("grow", "asset/grow.ogg");
+	$.WORLD.addSound("flip", "asset/flip.ogg");
+	$.WORLD.addSound("yeah", "asset/yeah.ogg");
+	$.WORLD.addSound("point", "asset/point.ogg");
 
 	for (var name in this.controllers) {
 		this.controllers[name].load();

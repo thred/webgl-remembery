@@ -140,8 +140,8 @@ $.BoardView.prototype.showCard = function(index) {
 	this.cardObjects[index].showTween().start();
 };
 
-$.BoardView.prototype.hideCard = function(index) {
-	this.cardObjects[index].hideTween().start();
+$.BoardView.prototype.hideCard = function(index, offset) {
+	this.cardObjects[index].hideTween().delay(offset * 100 / $.SPEED).start();
 };
 
 $.BoardView.prototype.collectCard = function(index, offset) {

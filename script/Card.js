@@ -106,12 +106,15 @@ $.Card.prototype.showTween = function() {
 		rot: Util.round(self.children[0].rotation.y - Math.PI, Math.PI, Math.PI * 2),
 		height: Math.PI
 	};
+	var start = function() {
+			$.WORLD.playSound("flip", self.position);
+		};
 	var update = function() {
 			self.children[0].position.z = ($.Card.THICKNESS / 2) + Math.sin(this.height) * $.Card.SIZE;
 			self.children[0].rotation.y = this.rot;
 		};
 
-	return new TWEEN.Tween(from).to(to, 250 / $.SPEED).onUpdate(update);
+	return new TWEEN.Tween(from).to(to, 250 / $.SPEED).onStart(start).onUpdate(update);
 };
 
 $.Card.prototype.hideTween = function() {
@@ -125,12 +128,15 @@ $.Card.prototype.hideTween = function() {
 		rot: Util.round(self.children[0].rotation.y - Math.PI, 0, Math.PI * 2),
 		height: Math.PI
 	};
+	var start = function() {
+			$.WORLD.playSound("flip", self.position);
+		};
 	var update = function() {
 			self.children[0].position.z = ($.Card.THICKNESS / 2) + Math.sin(this.height) * $.Card.SIZE;
 			self.children[0].rotation.y = this.rot;
 		};
 
-	return new TWEEN.Tween(from).to(to, 250 / $.SPEED).onUpdate(update);
+	return new TWEEN.Tween(from).to(to, 250 / $.SPEED).onStart(start).onUpdate(update);
 };
 
 $.Card.prototype.collectTween = function(position) {
@@ -186,4 +192,3 @@ $.Card.prototype.stackTween = function(position) {
 
 	return new TWEEN.Tween(from).to(to, 500 / $.SPEED).easing(TWEEN.Easing.Cubic.Out).onUpdate(update);
 };
-

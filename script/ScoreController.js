@@ -26,6 +26,7 @@ $.ScoreController.prototype.inactivate = function() {
 
 $.ScoreController.prototype.countScoreTween = function() {
 	var self = this;
+	var next = 10;
 
 	var from = {
 		value: 0
@@ -35,6 +36,11 @@ $.ScoreController.prototype.countScoreTween = function() {
 	};
 	var update = function() {
 			self.view.scoreObject.score(Math.round(this.value), self.maxScore);
+			
+			if (this.value > next) {
+				$.WORLD.playSound("point");
+				next = Util.round(this.value + 25, 0, 25);
+			}
 		};
 
 	return new TWEEN.Tween(from).to(to, 3000 / $.SPEED).onUpdate(update);
