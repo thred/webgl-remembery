@@ -41,17 +41,3 @@ $.animate = function(time) {
 $.message = function(message) {
 	document.getElementById('message').innerHTML = message;
 };
-
-
-
-/*
-$.load = function() {
-
-	this.firework.load();
-	for (var name in $.pages) {
-		$.pages[name].load();
-	}
-};
-
-
-*/

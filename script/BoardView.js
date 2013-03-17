@@ -78,6 +78,19 @@ $.BoardView.prototype.activate = function() {
 	this.stackSize = 0;
 };
 
+$.BoardView.prototype.inactivate = function() {
+	this.boardObject.shrinkTween(250).start();
+
+	$.MAIN.schedule(this, function() {
+		this.boardObject.remove(this.tableObject);
+
+		for (var i = 0; i < this.cardObjects.length; i += 1) {
+			this.boardObject.remove(this.cardObjects[i]);
+			this.cardObjects[i].reset();
+		}
+	}, 250);
+};
+
 $.BoardView.prototype.activateTable = function(width, height) {
 	var geometry = new THREE.ExtrudeGeometry(Util.createRoundedRectangleShape(width, height, 6), {
 		amount: 2,
@@ -95,12 +108,12 @@ $.BoardView.prototype.activateTable = function(width, height) {
 	geometry.computeBoundingBox();
 	THREE.GeometryUtils.center(geometry);
 
-	var mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial([this.tableFrontMaterial, this.tableSideMaterial]));
+	this.tableObject = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial([this.tableFrontMaterial, this.tableSideMaterial]));
 
-	mesh.position.set(0, 0, - 2);
-	mesh.setVisible(false);
+	this.tableObject.position.set(0, 0, - 2);
+	this.tableObject.setVisible(false);
 
-	this.boardObject.add(mesh);
+	this.boardObject.add(this.tableObject);
 
 };
 

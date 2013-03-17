@@ -44,6 +44,10 @@ $.Card.prototype.createGeometry = function() {
 	return $.Card.uniqueGeometry = geometry;
 };
 
+$.Card.prototype.reset = function() {
+	this.children[0].rotation.set(Math.PI, 0, 0);
+};
+
 $.Card.prototype.growTween = function(duration) {
 	var self = this;
 
@@ -183,42 +187,3 @@ $.Card.prototype.stackTween = function(position) {
 	return new TWEEN.Tween(from).to(to, 500 / $.SPEED).easing(TWEEN.Easing.Cubic.Out).onUpdate(update);
 };
 
-/*
-$.Card.prototype.showTween = function() {
-	var self = this;
-
-	var from = {
-		rot: self.children[0].rotation.x,
-		height: 0
-	};
-	var to = {
-		rot: Util.round(self.children[0].rotation.x - Math.PI, 0, Math.PI * 2),
-		height: Math.PI
-	};
-	var update = function() {
-			self.children[0].position.z = ($.Card.THICKNESS / 2) + Math.sin(this.height) * $.Card.SIZE;
-			self.children[0].rotation.x = this.rot;
-		};
-
-	return new TWEEN.Tween(from).to(to, 200 / $.SPEED).onUpdate(update);
-};
-
-$.Card.prototype.hideTween = function() {
-	var self = this;
-
-	var from = {
-		rot: self.children[0].rotation.x,
-		height: 0
-	};
-	var to = {
-		rot: Util.round(self.children[0].rotation.x - Math.PI, Math.PI, Math.PI * 2),
-		height: Math.PI
-	};
-	var update = function() {
-			self.children[0].position.z = ($.Card.THICKNESS / 2) + Math.sin(this.height) * $.Card.SIZE;
-			self.children[0].rotation.x = this.rot;
-		};
-
-	return new TWEEN.Tween(from).to(to, 200 / $.SPEED).onUpdate(update);
-};
-*/

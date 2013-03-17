@@ -86,6 +86,31 @@ THREE.Object3D.prototype.growTween = function(duration) {
 	return new TWEEN.Tween(from).to(to, duration / $.SPEED).easing(TWEEN.Easing.Elastic.Out).onStart(start).onUpdate(update);
 };
 
+THREE.Object3D.prototype.shrinkTween = function(duration) {
+	var self = this;
+	var base = self.scale.clone();
+
+	var from = {
+		scaleX: this.scale.x,
+		scaleY: this.scale.y,
+		scaleZ: this.scale.z
+	};
+	var to = {
+		scaleX: 0,
+		scaleY: 0,
+		scaleZ: 0
+	};
+	var update = function() {
+			self.scale.set(this.scaleX, this.scaleY, this.scaleZ);
+		};
+	var complete = function() {
+			self.setVisible(false);
+			self.scale = base;
+		};
+
+	return new TWEEN.Tween(from).to(to, duration / $.SPEED).easing(TWEEN.Easing.Cubic.Out).onUpdate(update).onComplete(complete);
+};
+
 THREE.Object3D.prototype.bounceInTween = function(fromPosition, toPosition, duration, height) {
 	var self = this;
 	var sound = 0;
@@ -128,7 +153,7 @@ THREE.Object3D.prototype.bounceInTween = function(fromPosition, toPosition, dura
 THREE.Object3D.prototype.blowTween = function(bubbles, radius) {
 	bubbles = bubbles || 20;
 	radius = radius || 10;
-	
+
 	var self = this;
 	var base = self.scale.clone();
 
@@ -161,7 +186,7 @@ THREE.Object3D.prototype.blowTween = function(bubbles, radius) {
 			for (var i = 0; i < bubbles; i += 1) {
 				$.MAIN.getController("firework").bubble(self.position, radius);
 			}
-			
+
 			self.scale = base;
 		};
 

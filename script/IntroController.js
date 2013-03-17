@@ -15,12 +15,10 @@ $.IntroController.prototype.activate = function() {
 };
 
 $.IntroController.prototype.inactivate = function() {
-	$.WORLD.removeView(this.view);
+	$.WORLD.removeView(this.view, 250);
 };
 
 $.IntroController.prototype.onPlay = function() {
-	$.MAIN.schedule(this, function() {
-		$.MAIN.inactivateController("intro");
-		$.MAIN.activateController("size");
-	}, 250);
+	$.MAIN.inactivateController("intro");
+	$.MAIN.activateController("size", 250);
 };

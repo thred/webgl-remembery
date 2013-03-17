@@ -38,7 +38,7 @@ $.BoardController.prototype.activate = function() {
 };
 
 $.BoardController.prototype.inactivate = function() {
-	$.WORLD.removeView(this.view);
+	$.WORLD.removeView(this.view, 250);
 };
 
 $.BoardController.prototype.initCardDatas = function() {

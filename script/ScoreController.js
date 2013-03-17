@@ -21,7 +21,7 @@ $.ScoreController.prototype.activate = function() {
 };
 
 $.ScoreController.prototype.inactivate = function() {
-	$.WORLD.removeView(this.view);
+	$.WORLD.removeView(this.view, 250);
 };
 
 $.ScoreController.prototype.countScoreTween = function() {
@@ -41,10 +41,7 @@ $.ScoreController.prototype.countScoreTween = function() {
 };
 
 $.ScoreController.prototype.onPlay = function() {
-	$.MAIN.schedule(this, function() {
-		$.MAIN.inactivateController("board");
-		$.MAIN.inactivateController("score");
-		$.MAIN.activateController("size");
-	}, 250);
+	$.MAIN.inactivateController("board");
+	$.MAIN.inactivateController("score");
+	$.MAIN.activateController("size", 250);
 };
-

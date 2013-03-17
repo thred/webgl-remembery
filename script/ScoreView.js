@@ -57,12 +57,12 @@ $.ScoreView.prototype.activate = function() {
 
 	this.viewObject.position = position;
 	this.scoreObject.score(0, this.controller.maxScore);
-	this.scoreObject.position = this.scoreObject.startPosition;
+	this.scoreObject.position = this.scoreObject.startPosition.clone();
 	this.scoreObject.moveTween(this.scoreObject.startPosition, this.scoreObject.showPosition, 1000).delay(2000 / $.SPEED).start();
 
 	this.viewObject.visible = true;
 
-	$.WORLD.camera.locateTween(position, 0, $.WORLD.camera.computeDistance(60, 30), Math.PI * 2,
+	$.WORLD.camera.locateTween(position, 0, $.WORLD.camera.computeDistance(60, 30), 0,
 	2000).start();
 };
 
@@ -105,6 +105,6 @@ $.ScoreView.prototype.onPlayButtonClick = function(mesh) {
 			$.WORLD.removeClickable(this.starObjects[i].children[0]);
 		}
 	}
-	
+
 	this.controller.onPlay();
 };

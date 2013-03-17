@@ -57,8 +57,6 @@ $.SizeView.prototype.activate = function() {
 };
 
 $.SizeView.prototype.inactivate = function() {
-	$.WORLD.removeAllClickables();
-	$.WORLD.clearClick();
 };
 
 $.SizeView.prototype.onButtonClick = function(mesh) {

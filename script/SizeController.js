@@ -32,14 +32,11 @@ $.SizeController.prototype.activate = function() {
 };
 
 $.SizeController.prototype.inactivate = function() {
-	$.WORLD.removeView(this.view);
+	$.WORLD.removeView(this.view, 250);
 };
 
 $.SizeController.prototype.onSelect = function(index) {
 	$.MAIN.getController("board").boardSize = this.BOARD_SIZES[index];
-
-	$.MAIN.schedule(this, function() {
-		$.MAIN.inactivateController("size");
-		$.MAIN.activateController("board");
-	}, 250);
+	$.MAIN.inactivateController("size");
+	$.MAIN.activateController("board", 250);
 };

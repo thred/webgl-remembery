@@ -111,9 +111,13 @@ $.World.prototype.addView = function(view) {
 	view.activate();
 };
 
-$.World.prototype.removeView = function(view) {
-	this.views.splice(this.views.indexOf(view), 1);
+$.World.prototype.removeView = function(view, delay) {
+	delay = delay || 0;
 	view.inactivate();
+
+	$.MAIN.schedule(this, function() {
+		this.views.splice(this.views.indexOf(view), 1);
+	}, delay);
 };
 
 $.World.prototype.addClickable = function(mesh, object, handler) {

@@ -30,11 +30,16 @@ $.Main.prototype.getController = function(controllerName) {
 	return this.controllers[controllerName];
 };
 
-$.Main.prototype.activateController = function(controllerName) {
+$.Main.prototype.activateController = function(controllerName, delay) {
+	delay = delay || 0;
+
 	var controller = this.getController(controllerName);
 
 	this.activeControllers.push(controller);
-	controller.activate();
+
+	this.schedule(this, function() {
+		controller.activate();
+	}, delay);
 };
 
 $.Main.prototype.inactivateController = function(controllerName) {
@@ -52,7 +57,11 @@ $.Main.prototype.animate = function(time, duration) {
 };
 
 $.Main.prototype.schedule = function(object, func, delay) {
-	new TWEEN.Tween(0).onComplete(function() {
+	if (delay > 0) {
+		new TWEEN.Tween(0).onComplete(function() {
+			func.call(object);
+		}).delay(delay / $.SPEED).start();
+	} else {
 		func.call(object);
-	}).delay(delay / $.SPEED).start();
+	}
 };

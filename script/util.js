@@ -4,6 +4,14 @@ THREE.Camera.prototype.computeDistance = function(width, height) {
 };
 
 THREE.Camera.prototype.locate = function(lookingAt, direction, distance, theta) {
+	while (theta >= Math.PI * 2) {
+		theta -= Math.PI * 2;
+	}
+
+	while (theta < 0) {
+		theta += Math.PI * 2;
+	}
+
 	var dir = direction + this.directionOffset;
 	var t = theta + this.thetaOffset;
 
