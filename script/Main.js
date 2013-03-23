@@ -9,18 +9,19 @@ $.Main = function() {
 	this.activeControllers = [];
 };
 
-$.Main.prototype.load = function() {
-	$.WORLD.addSound("bubble0", "asset/bubble0.ogg");
-	$.WORLD.addSound("bubble1", "asset/bubble1.ogg");
-	$.WORLD.addSound("bubble2", "asset/bubble2.ogg");
-	$.WORLD.addSound("spring", "asset/spring.ogg");
-	$.WORLD.addSound("grow", "asset/grow.ogg");
-	$.WORLD.addSound("flip", "asset/flip.ogg");
-	$.WORLD.addSound("yeah", "asset/yeah.ogg");
-	$.WORLD.addSound("point", "asset/point.ogg");
+$.Main.prototype.load = function(loadingMonitor) {
+	$.WORLD.addSound("bubble0", "asset/bubble0.ogg", loadingMonitor);
+	$.WORLD.addSound("bubble1", "asset/bubble1.ogg", loadingMonitor);
+	$.WORLD.addSound("bubble2", "asset/bubble2.ogg", loadingMonitor);
+	$.WORLD.addSound("spring", "asset/spring.ogg", loadingMonitor);
+	$.WORLD.addSound("grow", "asset/grow.ogg", loadingMonitor);
+	$.WORLD.addSound("flip", "asset/flip.ogg", loadingMonitor);
+	$.WORLD.addSound("yeah", "asset/yeah.ogg", loadingMonitor);
+	$.WORLD.addSound("point", "asset/point.ogg", loadingMonitor);
+	$.WORLD.addSound("applause", "asset/applause.ogg", loadingMonitor);
 
 	for (var name in this.controllers) {
-		this.controllers[name].load();
+		this.controllers[name].load(loadingMonitor);
 	}
 };
 

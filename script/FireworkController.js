@@ -6,8 +6,8 @@ $.FireworkController = function() {
 
 $.FireworkController.prototype = Object.create($.Controller.prototype);
 
-$.FireworkController.prototype.load = function() {
-	this.view.load();
+$.FireworkController.prototype.load = function(loadingMonitor) {
+	this.view.load(loadingMonitor);
 };
 
 $.FireworkController.prototype.activate = function() {

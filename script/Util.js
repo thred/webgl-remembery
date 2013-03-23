@@ -72,33 +72,43 @@ Util.createRoundedRectangleShape = function(width, height, radius) {
 	var shape = new THREE.Shape();
 	var hw = width / 2;
 	var hh = height / 2;
+	
+	if ($.HI) {
 
-	shape.moveTo(-hw + radius, hh);
+		shape.moveTo(-hw + radius, hh);
 
-	if (radius * 2 < width) {
-		shape.lineTo(hw - radius, hh);
+		if (radius * 2 < width) {
+			shape.lineTo(hw - radius, hh);
+		}
+
+		shape.quadraticCurveTo(hw, hh, hw, hh - radius);
+
+		if (radius * 2 < height) {
+			shape.lineTo(hw, - hh + radius);
+		}
+
+		shape.quadraticCurveTo(hw, - hh, hw - radius, - hh);
+
+		if (radius * 2 < width) {
+			shape.lineTo(-hw + radius, - hh);
+		}
+
+		shape.quadraticCurveTo(-hw, - hh, - hw, - hh + radius);
+
+		if (radius * 2 < height) {
+			shape.lineTo(-hw, hh - radius);
+		}
+
+		shape.quadraticCurveTo(-hw, hh, - hw + radius, hh);
 	}
-
-	shape.quadraticCurveTo(hw, hh, hw, hh - radius);
-
-	if (radius * 2 < height) {
-		shape.lineTo(hw, - hh + radius);
+	else {
+		shape.moveTo(-hw, hh);
+		shape.lineTo(hw, hh);
+		shape.lineTo(hw, -hh);
+		shape.lineTo(-hw, -hh);
+		shape.lineTo(-hw, hh);
 	}
-
-	shape.quadraticCurveTo(hw, - hh, hw - radius, - hh);
-
-	if (radius * 2 < width) {
-		shape.lineTo(-hw + radius, - hh);
-	}
-
-	shape.quadraticCurveTo(-hw, - hh, - hw, - hh + radius);
-
-	if (radius * 2 < height) {
-		shape.lineTo(-hw, hh - radius);
-	}
-
-	shape.quadraticCurveTo(-hw, hh, - hw + radius, hh);
-
+	
 	return shape;
 };
 
@@ -153,12 +163,12 @@ Util.createParticleMaterial = function(textureFile) {
 	return material;
 };
 
-Util.createTexturedMaterial = function(textureFile, textureRepeat, transparent, opacity) {
+Util.createTexturedMaterial = function(textureFile, loadingMonitor, textureRepeat, transparent, opacity) {
 	textureRepeat = textureRepeat || 1;
 	transparent = transparent || false;
 	opacity = opacity || 1;
 
-	var texture = THREE.ImageUtils.loadTexture(textureFile);
+	var texture = Util.loadTexture(textureFile, loadingMonitor);
 
 	texture.minFilter = texture.magFilter = THREE.LinearFilter;
 	texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
@@ -166,8 +176,8 @@ Util.createTexturedMaterial = function(textureFile, textureRepeat, transparent, 
 
 	var material = new THREE.MeshPhongMaterial({
 		map: texture,
-		specular: 0xffffff,
-		ambient: 0xaaccff
+		specular: ($.HI) ? 0xffffff : null,
+		ambient: ($.HI) ? 0xaaccff : null
 	});
 
 	if (transparent) {
@@ -181,8 +191,29 @@ Util.createTexturedMaterial = function(textureFile, textureRepeat, transparent, 
 Util.createColoredMaterial = function(materialColor) {
 	return new THREE.MeshPhongMaterial({
 		color: materialColor,
-		specular: 0xffffff,
-		ambient: 0xaaccff
-
+		specular: ($.HI) ? 0xffffff : null,
+		ambient: ($.HI) ? 0xaaccff : null
 	});
+};
+
+Util.loadTexture = function(url, loadingMonitor) {
+	var image = new Image();
+	var texture = new THREE.Texture(image);
+	var loader = new THREE.ImageLoader();
+
+	if (loadingMonitor) {
+		loadingMonitor.add(loader);
+	}
+	
+	loader.addEventListener('load', function(event) {
+		texture.image = event.content;
+		texture.needsUpdate = true;
+	});
+
+	loader.crossOrigin = 'anonymous';
+	loader.load(url, image);
+
+	texture.sourceFile = url;
+
+	return texture;
 };

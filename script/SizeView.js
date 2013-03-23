@@ -24,16 +24,16 @@ $.SizeView.prototype.BUTTONS = [{
 	color: 0x782121
 }];
 
-$.SizeView.prototype.load = function() {
+$.SizeView.prototype.load = function(loadingMonitor) {
 	for (var i = 0; i < this.BUTTONS.length; i += 1) {
-		this.buttonObjects[i] = this.loadButton(this.BUTTONS[i], i);
+		this.buttonObjects[i] = this.loadButton(loadingMonitor, this.BUTTONS[i], i);
 		this.buttonObjects[i].index = i;
 		$.WORLD.addObject(this.buttonObjects[i]);
 	}
 };
 
-$.SizeView.prototype.loadButton = function(button, index) {
-	var object = new $.Button(button.texture, button.color);
+$.SizeView.prototype.loadButton = function(loadingMonitor, button, index) {
+	var object = new $.Button(button.texture, loadingMonitor, button.color);
 	var x = (index - 2) * 20;
 
 	object.setVisible(false);

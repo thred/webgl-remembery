@@ -21,8 +21,8 @@ $.BoardController.prototype.STATE_FINISHED = 4;
 $.BoardController.prototype.SCORE_PER_COUNT = [50, 50, 50, 25, 15, 10, 5];
 
 
-$.BoardController.prototype.load = function() {
-	this.view.load();
+$.BoardController.prototype.load = function(loadingMonitor) {
+	this.view.load(loadingMonitor);
 };
 
 $.BoardController.prototype.activate = function() {

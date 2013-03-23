@@ -1,4 +1,4 @@
-$.Score = function() {
+$.Score = function(loadingMonitor) {
 	THREE.Object3D.call(this);
 
 	this.canvas = document.createElement('canvas');
@@ -8,6 +8,10 @@ $.Score = function() {
 	this.context = this.canvas.getContext('2d');
 
 	this.digitImages = [];
+	
+	var onLoad = function() {
+		
+	};
 
 	for (var i = 0; i < 10; i += 1) {
 		var image = new Image();
@@ -15,13 +19,14 @@ $.Score = function() {
 		image.src = 'asset/digit' + i + '.png';
 
 		this.digitImages[i] = image;
+		
+		loadingMonitor.add(this.digitImages[i]);
 	}
 
 	this.slashImage = new Image();
-	this.slashImage.onload = function() {
-
-	};
 	this.slashImage.src = 'asset/slash.png';
+
+	loadingMonitor.add(this.slashImage);
 
 	this.scoreTexture = new THREE.Texture(this.canvas);
 	this.scoreTexture.needsUpdate = true;
@@ -53,18 +58,20 @@ $.Score.prototype.createGeometry = function() {
 	var shape = Util.createRoundedRectangleShape(33, 6, 3);
 	var geometry = new $.ExtrudeGeometry(shape, {
 		amount: 0.8,
-		bevelSegments: 2,
-		steps: 2,
-		bevelSize: 0.08,
-		bevelThickness: 0.08,
+		bevelSegments: ($.HI) ? 2 : 0,
+		steps: ($.HI) ? 2 : 1,
+		bevelSize: ($.HI) ? 0.08 : 0,
+		bevelThickness: ($.HI) ? 0.08 : 0,
 		material: 0,
 		backMaterial: 1,
 		extrudeMaterial: 1
 	});
 
-	geometry.computeFaceNormals();
-	geometry.computeVertexNormals();
-	geometry.computeTangents();
+	if ($.HI) {
+		geometry.computeFaceNormals();
+		geometry.computeVertexNormals();
+		geometry.computeTangents();
+	}
 	geometry.computeBoundingBox();
 	THREE.GeometryUtils.center(geometry);
 

@@ -2,7 +2,7 @@ $.View = function(controller) {
 	this.controller = controller;
 };
 
-$.View.prototype.load = function() {};
+$.View.prototype.load = function(loadingMonitor) {};
 
 $.View.prototype.activate = function() {};
 

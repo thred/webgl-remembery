@@ -44,32 +44,35 @@ $.IntroView.prototype.LETTERS = [{
 	x: 73.5 - 36.75
 }];
 
-$.IntroView.prototype.load = function() {
+$.IntroView.prototype.load = function(loadingMonitor) {
 	function loadLetter(letter) {
 		var textGeo = new THREE.TextGeometry(letter.letter, {
 			size: 10,
 			height: 4,
-			curveSegments: 2,
+			curveSegments: ($.HI) ? 2 : 1,
 
 			font: "foo",
 			weight: "normal",
 			style: "normal",
 
 			bevelThickness: 0.1,
-			bevelSize: 0.1,
-			bevelEnabled: true
+			bevelSize: ($.HI) ? 0.1 : 0,
+			bevelEnabled: $.HI
 
 		});
 
 		textGeo.computeBoundingBox();
 		THREE.GeometryUtils.center(textGeo);
-		textGeo.computeFaceNormals();
-		textGeo.computeVertexNormals();
+		
+		if ($.HI) {
+			textGeo.computeFaceNormals();
+			textGeo.computeVertexNormals();
+		}
 
 		var textMaterial = new THREE.MeshPhongMaterial({
 			color: letter.color,
-			specular: 0xffffff,
-			ambient: 0xaaccff
+			specular: ($.HI) ? 0xffffff : null,
+			ambient: ($.HI) ? 0xaaccff : null
 		});
 
 		var mesh = new THREE.Mesh(textGeo, textMaterial);
@@ -91,7 +94,7 @@ $.IntroView.prototype.load = function() {
 		$.WORLD.addObject(this.letterObjects[i]);
 	}
 
-	this.playButtonObject = new $.Button('asset/play.png', 0x6f916f);
+	this.playButtonObject = new $.Button('asset/play.png', loadingMonitor, 0x6f916f);
 	this.playButtonObject.scale.set(20, 20, 20);
 	this.playButtonObject.startPosition = new THREE.Vector3(100, - 10, - 7);
 	this.playButtonObject.showPosition = new THREE.Vector3(0, - 10, - 7);

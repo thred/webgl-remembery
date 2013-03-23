@@ -23,8 +23,8 @@ $.SizeController.prototype.BOARD_SIZES = [{
 	height: 6
 }];
 
-$.SizeController.prototype.load = function() {
-	this.view.load();
+$.SizeController.prototype.load = function(loadingMonitor) {
+	this.view.load(loadingMonitor);
 };
 
 $.SizeController.prototype.activate = function() {

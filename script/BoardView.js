@@ -4,27 +4,27 @@ $.BoardView = function(controller) {
 
 $.BoardView.prototype = Object.create($.View.prototype);
 
-$.BoardView.prototype.load = function() {
+$.BoardView.prototype.load = function(loadingMonitor) {
 	this.boardObject = new THREE.Object3D();
 
-	this.tableFrontMaterial = Util.createTexturedMaterial("asset/table.png", 10);
+	this.tableFrontMaterial = Util.createTexturedMaterial("asset/table.png", loadingMonitor, 10);
 	this.tableSideMaterial = Util.createColoredMaterial(0xff0000);
 
-	this.loadCards();
+	this.loadCards(loadingMonitor);
 
 	this.boardObject.setVisible(false);
 
 	$.WORLD.addObject(this.boardObject);
 };
 
-$.BoardView.prototype.loadCards = function() {
-	var cardBackMaterial = Util.createTexturedMaterial('asset/cardback.png', 2);
+$.BoardView.prototype.loadCards = function(loadingMonitor) {
+	var cardBackMaterial = Util.createTexturedMaterial('asset/cardback.png', loadingMonitor, 2);
 	var cardSideMaterial = Util.createColoredMaterial(0x808080);
 
 	this.cardObjects = [];
 
 	for (var i = 0; i < this.controller.NUMBER_OF_CARDS; i += 1) {
-		var cardFrontMaterial = Util.createTexturedMaterial('asset/memory' + i + ".jpg", 1);
+		var cardFrontMaterial = Util.createTexturedMaterial('asset/memory' + i + ".jpg", loadingMonitor, 1);
 
 		for (var j = 0; j < 2; j += 1) {
 			var cardObject = new $.Card(cardFrontMaterial, cardBackMaterial, cardSideMaterial);
@@ -92,19 +92,21 @@ $.BoardView.prototype.inactivate = function() {
 };
 
 $.BoardView.prototype.activateTable = function(width, height) {
-	var geometry = new THREE.ExtrudeGeometry(Util.createRoundedRectangleShape(width, height, 6), {
+	var geometry = new $.ExtrudeGeometry(Util.createRoundedRectangleShape(width, height, 6), {
 		amount: 2,
-		bevelSegments: 2,
-		steps: 2,
-		bevelSize: 1,
-		bevelThickness: 1,
+		bevelSegments: ($.HI) ? 2 : 0,
+		steps: ($.HI) ? 2 : 1,
+		bevelSize: ($.HI) ? 1 : 0, 
+		bevelThickness: ($.HI) ? 1 : 0,
 		material: 0,
 		extrudeMaterial: 1
 	});
 
-	geometry.computeFaceNormals();
-	geometry.computeVertexNormals();
-	geometry.computeTangents();
+	if ($.HI) {
+		geometry.computeFaceNormals();
+		geometry.computeVertexNormals();
+		geometry.computeTangents();
+	}
 	geometry.computeBoundingBox();
 	THREE.GeometryUtils.center(geometry);
 
@@ -114,7 +116,6 @@ $.BoardView.prototype.activateTable = function(width, height) {
 	this.tableObject.setVisible(false);
 
 	this.boardObject.add(this.tableObject);
-
 };
 
 $.BoardView.prototype.activateCards = function() {

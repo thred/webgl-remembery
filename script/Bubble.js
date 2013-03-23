@@ -13,12 +13,14 @@ $.Bubble = function(view, boundsGeometry, boundsTexture, geometry, texture, posi
 	this.randomize(20);
 	this.offset = Math.random();
 
-	var boundsMesh = new THREE.Mesh(geometry, texture);
+	if ($.HI) {
+		var boundsMesh = new THREE.Mesh(geometry, texture);
 
-	boundsMesh.rotation = new THREE.Vector3((Math.random() - 0.5) * 4 * Math.PI, (Math.random() - 0.5) * 4 * Math.PI, (Math.random() - 0.5) * 4 * Math.PI);
-	boundsMesh.rotationVelocity = new THREE.Vector3((Math.random() - 0.5) * Math.PI, (Math.random() - 0.5) * Math.PI, (Math.random() - 0.5) * Math.PI);
+		boundsMesh.rotation = new THREE.Vector3((Math.random() - 0.5) * 4 * Math.PI, (Math.random() - 0.5) * 4 * Math.PI, (Math.random() - 0.5) * 4 * Math.PI);
+		boundsMesh.rotationVelocity = new THREE.Vector3((Math.random() - 0.5) * Math.PI, (Math.random() - 0.5) * Math.PI, (Math.random() - 0.5) * Math.PI);
 
-	this.add(boundsMesh);
+		this.add(boundsMesh);
+	}
 };
 
 $.Bubble.prototype = Object.create(THREE.Mesh.prototype);
@@ -39,10 +41,12 @@ $.Bubble.prototype.animate = function(time, duration) {
 	this.scale.y = this.size - sizeDisp;
 	this.scale.z = this.size + sizeDisp;
 
-	this.children[0].rotation.x += this.children[0].rotationVelocity.x * duration;
-	this.children[0].rotation.y += this.children[0].rotationVelocity.y * duration;
-	this.children[0].rotation.z += this.children[0].rotationVelocity.z * duration;
-
+	if ($.HI) {
+		this.children[0].rotation.x += this.children[0].rotationVelocity.x * duration;
+		this.children[0].rotation.y += this.children[0].rotationVelocity.y * duration;
+		this.children[0].rotation.z += this.children[0].rotationVelocity.z * duration;
+	}
+	
 	var move = this.target.clone().sub(this.position);
 
 	if (move.length() < 1) {

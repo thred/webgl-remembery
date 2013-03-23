@@ -2261,6 +2261,461 @@
          x="496"
          y="556.36218" />
     </clipPath>
+    <filter
+       id="filter5193"
+       inkscape:label="Bloom"
+       inkscape:menu="Bevels"
+       inkscape:menu-tooltip="Soft, cushion-like bevel with matte highlights"
+       color-interpolation-filters="sRGB">
+      <feGaussianBlur
+         id="feGaussianBlur5195"
+         result="result1"
+         in="SourceAlpha"
+         stdDeviation="2.2" />
+      <feSpecularLighting
+         id="feSpecularLighting5197"
+         result="result0"
+         specularExponent="18.1"
+         specularConstant="2"
+         surfaceScale="5">
+        <feDistantLight
+           id="feDistantLight5199"
+           azimuth="225"
+           elevation="24" />
+      </feSpecularLighting>
+      <feComposite
+         id="feComposite5201"
+         in2="SourceAlpha"
+         result="result6"
+         operator="in" />
+      <feMorphology
+         id="feMorphology5203"
+         radius="5.7"
+         operator="dilate" />
+      <feGaussianBlur
+         id="feGaussianBlur5205"
+         result="result11"
+         stdDeviation="5.7" />
+      <feDiffuseLighting
+         id="feDiffuseLighting5207"
+         surfaceScale="5"
+         result="result3"
+         diffuseConstant="2"
+         in="result1">
+        <feDistantLight
+           id="feDistantLight5209"
+           elevation="25"
+           azimuth="225" />
+      </feDiffuseLighting>
+      <feBlend
+         id="feBlend5211"
+         in2="SourceGraphic"
+         result="result7"
+         mode="multiply"
+         in="result3" />
+      <feComposite
+         id="feComposite5213"
+         in2="SourceAlpha"
+         in="result7"
+         operator="in"
+         result="result91" />
+      <feBlend
+         id="feBlend5215"
+         in2="result91"
+         result="result9"
+         mode="lighten"
+         in="result6" />
+      <feComposite
+         id="feComposite5217"
+         in2="result9"
+         in="result11" />
+    </filter>
+    <filter
+       id="filter5337"
+       inkscape:label="Stained glass"
+       inkscape:menu="Bevels"
+       inkscape:menu-tooltip="Illuminated stained glass effect"
+       height="1.5"
+       width="1.5"
+       y="-0.25"
+       x="-0.25"
+       color-interpolation-filters="sRGB">
+      <feBlend
+         id="feBlend5339"
+         in2="SourceGraphic"
+         result="result1"
+         mode="screen" />
+      <feGaussianBlur
+         id="feGaussianBlur5341"
+         stdDeviation="7"
+         result="result6" />
+      <feComposite
+         id="feComposite5343"
+         in2="result6"
+         operator="xor"
+         in="result6"
+         result="result7" />
+      <feComposite
+         id="feComposite5345"
+         in2="result1"
+         operator="atop"
+         in="result6"
+         result="result92" />
+      <feComposite
+         id="feComposite5347"
+         in2="result92"
+         result="result4"
+         in="result7"
+         operator="xor" />
+      <feGaussianBlur
+         id="feGaussianBlur5349"
+         result="result3"
+         stdDeviation="0.7"
+         in="result4" />
+      <feSpecularLighting
+         id="feSpecularLighting5351"
+         result="result5"
+         specularExponent="50"
+         specularConstant="1.5"
+         surfaceScale="4">
+        <fePointLight
+           id="fePointLight5353"
+           z="20000"
+           y="-8000"
+           x="-5000" />
+      </feSpecularLighting>
+      <feComposite
+         id="feComposite5355"
+         in2="SourceGraphic"
+         in="result3"
+         k3="1"
+         k2="1"
+         operator="arithmetic"
+         result="result93" />
+      <feComposite
+         id="feComposite5357"
+         in2="result93"
+         in="result5"
+         operator="atop"
+         result="result94" />
+      <feBlend
+         id="feBlend5359"
+         in2="result94"
+         mode="multiply" />
+    </filter>
+    <filter
+       id="filter6337"
+       inkscape:label="Melted jelly"
+       inkscape:menu="Bevels"
+       inkscape:menu-tooltip="Glossy bevel with blurred edges"
+       height="1.3"
+       y="-0.15"
+       width="1.3"
+       x="-0.15"
+       color-interpolation-filters="sRGB">
+      <feComposite
+         in2="SourceGraphic"
+         id="feComposite6339"
+         operator="arithmetic"
+         result="fbSourceGraphic"
+         in="SourceGraphic"
+         k2="0.9" />
+      <feGaussianBlur
+         id="feGaussianBlur6341"
+         result="result0"
+         in="fbSourceGraphic"
+         stdDeviation="6" />
+      <feSpecularLighting
+         id="feSpecularLighting6343"
+         specularExponent="25"
+         specularConstant="1"
+         surfaceScale="6"
+         lighting-color="rgb(255,255,255)"
+         result="result1"
+         in="result0">
+        <feDistantLight
+           id="feDistantLight6345"
+           azimuth="235"
+           elevation="55" />
+      </feSpecularLighting>
+      <feComposite
+         in2="result1"
+         id="feComposite6347"
+         k3="1.5"
+         k2="1"
+         operator="arithmetic"
+         result="result4"
+         in="result0" />
+      <feComposite
+         in2="result0"
+         id="feComposite6349"
+         operator="atop"
+         result="result2"
+         in="result4" />
+    </filter>
+    <filter
+       color-interpolation-filters="sRGB"
+       id="filter5202-1"
+       inkscape:label="Drop Shadow">
+      <feFlood
+         id="feFlood5204-7"
+         flood-opacity="0.5"
+         flood-color="rgb(0,0,0)"
+         result="flood" />
+      <feComposite
+         id="feComposite5206-4"
+         in2="SourceGraphic"
+         in="flood"
+         operator="in"
+         result="composite1" />
+      <feGaussianBlur
+         id="feGaussianBlur5208-0"
+         stdDeviation="1"
+         result="blur" />
+      <feOffset
+         id="feOffset5210-9"
+         dx="0"
+         dy="2"
+         result="offset" />
+      <feComposite
+         id="feComposite5212-4"
+         in2="offset"
+         in="SourceGraphic"
+         operator="over"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix5214-8" />
+      <feFlood
+         id="feFlood5216-8"
+         flood-opacity="0.5"
+         flood-color="rgb(0,0,0)"
+         result="flood"
+         in="fbSourceGraphic" />
+      <feComposite
+         id="feComposite5218-2"
+         in2="fbSourceGraphic"
+         in="flood"
+         operator="in"
+         result="composite1" />
+      <feGaussianBlur
+         id="feGaussianBlur5220-4"
+         stdDeviation="1"
+         result="blur" />
+      <feOffset
+         id="feOffset5222-5"
+         dx="0"
+         dy="2"
+         result="offset" />
+      <feComposite
+         id="feComposite5224-5"
+         in2="offset"
+         in="fbSourceGraphic"
+         operator="over"
+         result="composite2" />
+    </filter>
+    <filter
+       color-interpolation-filters="sRGB"
+       id="filter5202-7"
+       inkscape:label="Drop Shadow">
+      <feFlood
+         id="feFlood5204-1"
+         flood-opacity="0.5"
+         flood-color="rgb(0,0,0)"
+         result="flood" />
+      <feComposite
+         id="feComposite5206-1"
+         in2="SourceGraphic"
+         in="flood"
+         operator="in"
+         result="composite1" />
+      <feGaussianBlur
+         id="feGaussianBlur5208-5"
+         stdDeviation="1"
+         result="blur" />
+      <feOffset
+         id="feOffset5210-2"
+         dx="0"
+         dy="2"
+         result="offset" />
+      <feComposite
+         id="feComposite5212-7"
+         in2="offset"
+         in="SourceGraphic"
+         operator="over"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix5214-6" />
+      <feFlood
+         id="feFlood5216-1"
+         flood-opacity="0.5"
+         flood-color="rgb(0,0,0)"
+         result="flood"
+         in="fbSourceGraphic" />
+      <feComposite
+         id="feComposite5218-4"
+         in2="fbSourceGraphic"
+         in="flood"
+         operator="in"
+         result="composite1" />
+      <feGaussianBlur
+         id="feGaussianBlur5220-2"
+         stdDeviation="1"
+         result="blur" />
+      <feOffset
+         id="feOffset5222-3"
+         dx="0"
+         dy="2"
+         result="offset" />
+      <feComposite
+         id="feComposite5224-2"
+         in2="offset"
+         in="fbSourceGraphic"
+         operator="over"
+         result="composite2" />
+    </filter>
+    <filter
+       color-interpolation-filters="sRGB"
+       id="filter5202-7-1"
+       inkscape:label="Drop Shadow">
+      <feFlood
+         id="feFlood5204-1-6"
+         flood-opacity="0.5"
+         flood-color="rgb(0,0,0)"
+         result="flood" />
+      <feComposite
+         id="feComposite5206-1-8"
+         in2="SourceGraphic"
+         in="flood"
+         operator="in"
+         result="composite1" />
+      <feGaussianBlur
+         id="feGaussianBlur5208-5-5"
+         stdDeviation="1"
+         result="blur" />
+      <feOffset
+         id="feOffset5210-2-7"
+         dx="0"
+         dy="2"
+         result="offset" />
+      <feComposite
+         id="feComposite5212-7-6"
+         in2="offset"
+         in="SourceGraphic"
+         operator="over"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix5214-6-1" />
+      <feFlood
+         id="feFlood5216-1-8"
+         flood-opacity="0.5"
+         flood-color="rgb(0,0,0)"
+         result="flood"
+         in="fbSourceGraphic" />
+      <feComposite
+         id="feComposite5218-4-9"
+         in2="fbSourceGraphic"
+         in="flood"
+         operator="in"
+         result="composite1" />
+      <feGaussianBlur
+         id="feGaussianBlur5220-2-2"
+         stdDeviation="1"
+         result="blur" />
+      <feOffset
+         id="feOffset5222-3-7"
+         dx="0"
+         dy="2"
+         result="offset" />
+      <feComposite
+         id="feComposite5224-2-9"
+         in2="offset"
+         in="fbSourceGraphic"
+         operator="over"
+         result="composite2" />
+    </filter>
+    <filter
+       color-interpolation-filters="sRGB"
+       id="filter5202-4"
+       inkscape:label="Drop Shadow">
+      <feFlood
+         id="feFlood5204-3"
+         flood-opacity="0.5"
+         flood-color="rgb(0,0,0)"
+         result="flood" />
+      <feComposite
+         id="feComposite5206-12"
+         in2="SourceGraphic"
+         in="flood"
+         operator="in"
+         result="composite1" />
+      <feGaussianBlur
+         id="feGaussianBlur5208-3"
+         stdDeviation="1"
+         result="blur" />
+      <feOffset
+         id="feOffset5210-3"
+         dx="0"
+         dy="2"
+         result="offset" />
+      <feComposite
+         id="feComposite5212-41"
+         in2="offset"
+         in="SourceGraphic"
+         operator="over"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix5214-1" />
+      <feFlood
+         id="feFlood5216-3"
+         flood-opacity="0.5"
+         flood-color="rgb(0,0,0)"
+         result="flood"
+         in="fbSourceGraphic" />
+      <feComposite
+         id="feComposite5218-8"
+         in2="fbSourceGraphic"
+         in="flood"
+         operator="in"
+         result="composite1" />
+      <feGaussianBlur
+         id="feGaussianBlur5220-7"
+         stdDeviation="1"
+         result="blur" />
+      <feOffset
+         id="feOffset5222-4"
+         dx="0"
+         dy="2"
+         result="offset" />
+      <feComposite
+         id="feComposite5224-27"
+         in2="offset"
+         in="fbSourceGraphic"
+         operator="over"
+         result="composite2" />
+    </filter>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath5260">
+      <rect
+         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         id="rect5262"
+         width="128"
+         height="128"
+         x="1308.8"
+         y="-444.43781" />
+    </clipPath>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -2269,9 +2724,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.9729947"
-     inkscape:cx="309.75088"
-     inkscape:cy="611.4439"
+     inkscape:zoom="1.3760223"
+     inkscape:cx="1098.5743"
+     inkscape:cy="1475.6088"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -2310,6 +2765,26 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
+    <rect
+       y="-611.63782"
+       x="1280"
+       height="128"
+       width="128"
+       id="rect5197"
+       style="color:#000000;fill:#000000;fill-opacity:0;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       inkscape:export-filename="C:\home\dev\github\webgl-remembery\asset\hi.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       style="color:#000000;fill:#000000;fill-opacity:0;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect5195"
+       width="128"
+       height="128"
+       x="1120"
+       y="-611.63782"
+       inkscape:export-filename="C:\home\dev\github\webgl-remembery\asset\lo.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <rect
        style="color:#000000;fill:#008000;fill-opacity:0;fill-rule:nonzero;stroke:none;stroke-width:16;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        id="rect4871"
@@ -7455,105 +7930,109 @@
         </g>
       </g>
     </g>
-    <text
-       xml:space="preserve"
-       style="font-size:40px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#aa0000;fill-opacity:1;stroke:none;font-family:Aharoni;-inkscape-font-specification:Aharoni Bold"
-       x="11.896225"
-       y="172.36218"
-       id="text4029"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan4031"
-         x="11.896225"
-         y="172.36218">R</tspan></text>
-    <text
-       sodipodi:linespacing="125%"
-       id="text4033"
-       y="172.36218"
-       x="42.040546"
-       style="font-size:40px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#aa4400;fill-opacity:1;stroke:none;font-family:Aharoni;-inkscape-font-specification:Aharoni Bold"
-       xml:space="preserve"><tspan
-         y="172.36218"
-         x="42.040546"
-         id="tspan4035"
-         sodipodi:role="line">E</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:40px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#aa8800;fill-opacity:1;stroke:none;font-family:Aharoni;-inkscape-font-specification:Aharoni Bold"
-       x="66.384087"
-       y="172.36218"
-       id="text4037"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan4039"
-         x="66.384087"
-         y="172.36218">M</tspan></text>
-    <text
-       sodipodi:linespacing="125%"
-       id="text4041"
-       y="172.36218"
-       x="106.58701"
-       style="font-size:40px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#668000;fill-opacity:1;stroke:none;font-family:Aharoni;-inkscape-font-specification:Aharoni Bold"
-       xml:space="preserve"><tspan
-         y="172.36218"
-         x="106.58701"
-         id="tspan4043"
-         sodipodi:role="line">E</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:40px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#217821;fill-opacity:1;stroke:none;font-family:Aharoni;-inkscape-font-specification:Aharoni Bold"
-       x="130.93054"
-       y="172.36218"
-       id="text4045"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan4047"
-         x="130.93054"
-         y="172.36218">M</tspan></text>
-    <text
-       sodipodi:linespacing="125%"
-       id="text4049"
-       y="172.36218"
-       x="171.13345"
-       style="font-size:40px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#2ca089;fill-opacity:1;stroke:none;font-family:Aharoni;-inkscape-font-specification:Aharoni Bold"
-       xml:space="preserve"><tspan
-         y="172.36218"
-         x="171.13345"
-         id="tspan4051"
-         sodipodi:role="line">B</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:40px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0044aa;fill-opacity:1;stroke:none;font-family:Aharoni;-inkscape-font-specification:Aharoni Bold"
-       x="199.4223"
-       y="172.36218"
-       id="text4053"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan4055"
-         x="199.4223"
-         y="172.36218">E</tspan></text>
-    <text
-       sodipodi:linespacing="125%"
-       id="text4057"
-       y="172.36218"
-       x="222.57443"
-       style="font-size:40px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#4400aa;fill-opacity:1;stroke:none;font-family:Aharoni;-inkscape-font-specification:Aharoni Bold"
-       xml:space="preserve"><tspan
-         y="172.36218"
-         x="222.57443"
-         id="tspan4059"
-         sodipodi:role="line">R</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:40px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#d400aa;fill-opacity:1;stroke:none;font-family:Aharoni;-inkscape-font-specification:Aharoni Bold"
-       x="256"
-       y="172.36218"
-       id="text4061"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan4063"
-         x="256"
-         y="172.36218">Y</tspan></text>
+    <g
+       id="g4046"
+       transform="translate(74.074219,-112)">
+      <text
+         sodipodi:linespacing="125%"
+         id="text4029"
+         y="-147.63782"
+         x="705.82202"
+         style="font-size:40px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#aa0000;fill-opacity:1;stroke:none;font-family:Aharoni;-inkscape-font-specification:Aharoni Bold"
+         xml:space="preserve"><tspan
+           y="-147.63782"
+           x="705.82202"
+           id="tspan4031"
+           sodipodi:role="line">R</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:40px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#aa4400;fill-opacity:1;stroke:none;font-family:Aharoni;-inkscape-font-specification:Aharoni Bold"
+         x="735.96631"
+         y="-147.63782"
+         id="text4033"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan4035"
+           x="735.96631"
+           y="-147.63782">E</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text4037"
+         y="-147.63782"
+         x="760.30988"
+         style="font-size:40px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#aa8800;fill-opacity:1;stroke:none;font-family:Aharoni;-inkscape-font-specification:Aharoni Bold"
+         xml:space="preserve"><tspan
+           y="-147.63782"
+           x="760.30988"
+           id="tspan4039"
+           sodipodi:role="line">M</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:40px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#668000;fill-opacity:1;stroke:none;font-family:Aharoni;-inkscape-font-specification:Aharoni Bold"
+         x="800.51282"
+         y="-147.63782"
+         id="text4041"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan4043"
+           x="800.51282"
+           y="-147.63782">E</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text4045"
+         y="-147.63782"
+         x="824.85632"
+         style="font-size:40px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#217821;fill-opacity:1;stroke:none;font-family:Aharoni;-inkscape-font-specification:Aharoni Bold"
+         xml:space="preserve"><tspan
+           y="-147.63782"
+           x="824.85632"
+           id="tspan4047"
+           sodipodi:role="line">M</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:40px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#2ca089;fill-opacity:1;stroke:none;font-family:Aharoni;-inkscape-font-specification:Aharoni Bold"
+         x="865.0592"
+         y="-147.63782"
+         id="text4049"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan4051"
+           x="865.0592"
+           y="-147.63782">B</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text4053"
+         y="-147.63782"
+         x="893.34808"
+         style="font-size:40px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0044aa;fill-opacity:1;stroke:none;font-family:Aharoni;-inkscape-font-specification:Aharoni Bold"
+         xml:space="preserve"><tspan
+           y="-147.63782"
+           x="893.34808"
+           id="tspan4055"
+           sodipodi:role="line">E</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:40px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#4400aa;fill-opacity:1;stroke:none;font-family:Aharoni;-inkscape-font-specification:Aharoni Bold"
+         x="916.50024"
+         y="-147.63782"
+         id="text4057"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan4059"
+           x="916.50024"
+           y="-147.63782">R</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text4061"
+         y="-147.63782"
+         x="949.92578"
+         style="font-size:40px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#d400aa;fill-opacity:1;stroke:none;font-family:Aharoni;-inkscape-font-specification:Aharoni Bold"
+         xml:space="preserve"><tspan
+           y="-147.63782"
+           x="949.92578"
+           id="tspan4063"
+           sodipodi:role="line">Y</tspan></text>
+    </g>
     <g
        id="g4072"
        transform="translate(144,-143.99998)">
@@ -7663,5 +8142,595 @@
        height="128"
        x="784"
        y="556.36218" />
+    <g
+       id="g5051"
+       transform="translate(492.8,-396.8)"
+       inkscape:export-filename="C:\home\dev\github\webgl-remembery\asset\lo.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <rect
+         rx="16"
+         ry="16"
+         style="color:#000000;fill:#aa4400;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;filter:url(#filter5202-7);enable-background:accumulate"
+         id="rect5003"
+         width="128"
+         height="128"
+         x="640"
+         y="124.36218"
+         inkscape:export-filename="C:\home\dev\html\workspace\webgl-remembery\asset\play.png"
+         inkscape:export-xdpi="90"
+         inkscape:export-ydpi="90" />
+      <rect
+         ry="8"
+         rx="8"
+         y="140.36218"
+         x="676"
+         height="96"
+         width="56"
+         id="rect5005"
+         style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+      <rect
+         ry="0"
+         rx="0"
+         y="144.36218"
+         x="680"
+         height="76"
+         width="48"
+         id="rect5009"
+         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+      <path
+         transform="translate(0,-4)"
+         d="m 708,232.36218 c 0,2.20914 -1.79086,4 -4,4 -2.20914,0 -4,-1.79086 -4,-4 0,-2.20914 1.79086,-4 4,-4 2.20914,0 4,1.79086 4,4 z"
+         sodipodi:ry="4"
+         sodipodi:rx="4"
+         sodipodi:cy="232.36218"
+         sodipodi:cx="704"
+         id="path5011"
+         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         sodipodi:type="arc" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text5041"
+         y="188.36218"
+         x="704"
+         style="font-size:30.5418396px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
+         xml:space="preserve"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:center;text-anchor:middle;font-family:Aharoni;-inkscape-font-specification:Aharoni Bold"
+           y="188.36218"
+           x="704"
+           id="tspan5043"
+           sodipodi:role="line">LO</tspan></text>
+    </g>
+    <g
+       id="g5059"
+       transform="translate(524.8,-396.8)"
+       inkscape:export-filename="C:\home\dev\github\webgl-remembery\asset\hi.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <rect
+         ry="16"
+         rx="16"
+         inkscape:export-ydpi="90"
+         inkscape:export-xdpi="90"
+         inkscape:export-filename="C:\home\dev\html\workspace\webgl-remembery\asset\play.png"
+         y="124.36218"
+         x="784"
+         height="128"
+         width="128"
+         id="rect5031"
+         style="color:#000000;fill:#aa4400;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;filter:url(#filter5202-7-1);enable-background:accumulate" />
+      <rect
+         ry="4"
+         y="144.36218"
+         x="792"
+         height="76"
+         width="112"
+         id="rect5033"
+         style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         rx="4" />
+      <rect
+         rx="0"
+         ry="0"
+         y="148.36218"
+         x="796"
+         height="68"
+         width="104"
+         id="rect5035"
+         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+      <rect
+         y="222.36218"
+         x="840"
+         height="8"
+         width="16"
+         id="rect5037"
+         style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+      <rect
+         style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         id="rect5039"
+         width="48"
+         height="4"
+         x="824"
+         y="232.36218" />
+      <text
+         xml:space="preserve"
+         style="font-size:30.5418396px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
+         x="849.68518"
+         y="188.36218"
+         id="text5045"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan5047"
+           x="849.68518"
+           y="188.36218"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:center;text-anchor:middle;font-family:Aharoni;-inkscape-font-specification:Aharoni Bold">HI</tspan></text>
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-size:67.48679352px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#aa4400;fill-opacity:1;stroke:none;filter:url(#filter5202);font-family:Deutsch Gothic;-inkscape-font-specification:Deutsch Gothic"
+       x="741.20062"
+       y="-172.8911"
+       id="text4042"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="C:\home\dev\github\webgl-remembery\asset\title.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan4044"
+         x="741.20062"
+         y="-172.8911"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#aa4400;fill-opacity:1;font-family:Foo;-inkscape-font-specification:Foo"><tspan
+   style="fill:#aa0000;fill-opacity:1"
+   id="tspan4068">R</tspan>e<tspan
+   style="fill:#aa8800;fill-opacity:1"
+   id="tspan4842">m</tspan><tspan
+   id="tspan4852"
+   style="fill:#668000;fill-opacity:1">e</tspan><tspan
+   id="tspan4868"
+   style="fill:#217821;fill-opacity:1">m</tspan><tspan
+   style="fill:#2ca089;fill-opacity:1"
+   id="tspan4854">b</tspan><tspan
+   id="tspan4864"
+   style="fill:#0044aa;fill-opacity:1">e</tspan><tspan
+   style="fill:#4400aa;fill-opacity:1"
+   id="tspan4860">r</tspan><tspan
+   style="fill:#d400aa;fill-opacity:1"
+   id="tspan4858">y</tspan></tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;filter:url(#filter5202);font-family:Deutsch Gothic;-inkscape-font-specification:Deutsch Gothic"
+       x="783.14917"
+       y="98.605705"
+       id="text4870"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="C:\home\dev\github\webgl-remembery\asset\loading.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan4872"
+         x="783.14917"
+         y="98.605705"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#ffffff;font-family:Foo;-inkscape-font-specification:Foo">Loading</tspan></text>
+    <g
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="C:\home\dev\github\webgl-remembery\asset\lo_hover.png"
+       transform="translate(492.8,-236.8)"
+       id="g4874">
+      <rect
+         inkscape:export-ydpi="90"
+         inkscape:export-xdpi="90"
+         inkscape:export-filename="C:\home\dev\html\workspace\webgl-remembery\asset\play.png"
+         y="124.36218"
+         x="640"
+         height="128"
+         width="128"
+         id="rect4876"
+         style="color:#000000;fill:#ffa500;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;filter:url(#filter5202);enable-background:accumulate"
+         ry="16"
+         rx="16" />
+      <rect
+         style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         id="rect4878"
+         width="56"
+         height="96"
+         x="676"
+         y="140.36218"
+         rx="8"
+         ry="8" />
+      <rect
+         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         id="rect4880"
+         width="48"
+         height="76"
+         x="680"
+         y="144.36218"
+         rx="0"
+         ry="0" />
+      <path
+         sodipodi:type="arc"
+         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         id="path4882"
+         sodipodi:cx="704"
+         sodipodi:cy="232.36218"
+         sodipodi:rx="4"
+         sodipodi:ry="4"
+         d="m 708,232.36218 c 0,2.20914 -1.79086,4 -4,4 -2.20914,0 -4,-1.79086 -4,-4 0,-2.20914 1.79086,-4 4,-4 2.20914,0 4,1.79086 4,4 z"
+         transform="translate(0,-4)" />
+      <text
+         xml:space="preserve"
+         style="font-size:30.5418396px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
+         x="704"
+         y="188.36218"
+         id="text4884"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan4886"
+           x="704"
+           y="188.36218"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:center;text-anchor:middle;font-family:Aharoni;-inkscape-font-specification:Aharoni Bold">LO</tspan></text>
+    </g>
+    <g
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="C:\home\dev\github\webgl-remembery\asset\hi_hover.png"
+       transform="translate(524.8,-236.8)"
+       id="g4888">
+      <rect
+         style="color:#000000;fill:#ffa500;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;filter:url(#filter5202-4);enable-background:accumulate"
+         id="rect4890"
+         width="128"
+         height="128"
+         x="784"
+         y="124.36218"
+         inkscape:export-filename="C:\home\dev\html\workspace\webgl-remembery\asset\play.png"
+         inkscape:export-xdpi="90"
+         inkscape:export-ydpi="90"
+         rx="16"
+         ry="16" />
+      <rect
+         rx="4"
+         style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         id="rect4892"
+         width="112"
+         height="76"
+         x="792"
+         y="144.36218"
+         ry="4" />
+      <rect
+         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         id="rect4894"
+         width="104"
+         height="68"
+         x="796"
+         y="148.36218"
+         ry="0"
+         rx="0" />
+      <rect
+         style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         id="rect4896"
+         width="16"
+         height="8"
+         x="840"
+         y="222.36218" />
+      <rect
+         y="232.36218"
+         x="824"
+         height="4"
+         width="48"
+         id="rect4898"
+         style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text4900"
+         y="188.36218"
+         x="849.68518"
+         style="font-size:30.5418396px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
+         xml:space="preserve"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:center;text-anchor:middle;font-family:Aharoni;-inkscape-font-specification:Aharoni Bold"
+           y="188.36218"
+           x="849.68518"
+           id="tspan4902"
+           sodipodi:role="line">HI</tspan></text>
+    </g>
+    <image
+       y="156.32567"
+       x="1156.8861"
+       id="image5018"
+       xlink:href="data:image/png;base64,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
+"
+       height="86"
+       width="418" />
+    <text
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="C:\home\dev\github\webgl-remembery\asset\title.png"
+       sodipodi:linespacing="125%"
+       id="text5127"
+       y="-83.637817"
+       x="915.5589"
+       style="font-size:67.48679352000000600px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#aa4400;fill-opacity:1;stroke:none;filter:url(#filter5202);font-family:Deutsch Gothic;-inkscape-font-specification:Deutsch Gothic;text-anchor:middle;text-align:center"
+       xml:space="preserve"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#ffffff;fill-opacity:1;font-family:Foo;-inkscape-font-specification:Foo;text-anchor:middle;text-align:center"
+         y="-83.637817"
+         x="752"
+         id="tspan5129"
+         sodipodi:role="line">Remembery</tspan></text>
+    <g
+       id="g5178"
+       inkscape:export-filename="C:\home\dev\github\webgl-remembery\asset\lo.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"
+       transform="translate(-12.8,-163.2)"
+       style="filter:url(#filter5202)">
+      <g
+         id="g5147"
+         transform="translate(492.8,-572.8)"
+         inkscape:export-filename="C:\home\dev\github\webgl-remembery\asset\lo.png"
+         inkscape:export-xdpi="90"
+         inkscape:export-ydpi="90">
+        <rect
+           ry="8"
+           rx="8"
+           y="140.36218"
+           x="676"
+           height="96"
+           width="56"
+           id="rect5152"
+           style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+        <rect
+           ry="0"
+           rx="0"
+           y="144.36218"
+           x="680"
+           height="76"
+           width="48"
+           id="rect5154"
+           style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+        <path
+           transform="translate(0,-4)"
+           d="m 708,232.36218 c 0,2.20914 -1.79086,4 -4,4 -2.20914,0 -4,-1.79086 -4,-4 0,-2.20914 1.79086,-4 4,-4 2.20914,0 4,1.79086 4,4 z"
+           sodipodi:ry="4"
+           sodipodi:rx="4"
+           sodipodi:cy="232.36218"
+           sodipodi:cx="704"
+           id="path5156"
+           style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+           sodipodi:type="arc" />
+        <text
+           sodipodi:linespacing="125%"
+           id="text5158"
+           y="188.36218"
+           x="704"
+           style="font-size:30.5418396px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
+           xml:space="preserve"><tspan
+             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:center;text-anchor:middle;font-family:Aharoni;-inkscape-font-specification:Aharoni Bold"
+             y="188.36218"
+             x="704"
+             id="tspan5160"
+             sodipodi:role="line">LO</tspan></text>
+      </g>
+    </g>
+    <g
+       id="g5186"
+       inkscape:export-filename="C:\home\dev\github\webgl-remembery\asset\hi.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"
+       transform="translate(-28.8,-167.2)"
+       style="filter:url(#filter5202)"
+       clip-path="url(#clipPath5260)">
+      <g
+         id="g5162"
+         transform="translate(524.8,-572.8)"
+         inkscape:export-filename="C:\home\dev\github\webgl-remembery\asset\hi.png"
+         inkscape:export-xdpi="90"
+         inkscape:export-ydpi="90">
+        <rect
+           ry="4"
+           y="144.36218"
+           x="792"
+           height="76"
+           width="112"
+           id="rect5166"
+           style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+           rx="4" />
+        <rect
+           rx="0"
+           ry="0"
+           y="148.36218"
+           x="796"
+           height="68"
+           width="104"
+           id="rect5168"
+           style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+        <rect
+           y="222.36218"
+           x="840"
+           height="8"
+           width="16"
+           id="rect5170"
+           style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+        <rect
+           style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+           id="rect5172"
+           width="48"
+           height="4"
+           x="824"
+           y="232.36218" />
+        <text
+           xml:space="preserve"
+           style="font-size:30.5418396px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
+           x="849.68518"
+           y="188.36218"
+           id="text5174"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan5176"
+             x="849.68518"
+             y="188.36218"
+             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:center;text-anchor:middle;font-family:Aharoni;-inkscape-font-specification:Aharoni Bold">HI</tspan></text>
+      </g>
+    </g>
   </g>
 </svg>

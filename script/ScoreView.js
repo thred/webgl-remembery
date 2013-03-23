@@ -4,12 +4,12 @@ $.ScoreView = function(controller) {
 
 $.ScoreView.prototype = Object.create($.View.prototype);
 
-$.ScoreView.prototype.load = function() {
+$.ScoreView.prototype.load = function(loadingMonitor) {
 	var self = this;
 
 	this.viewObject = new THREE.Object3D();
 
-	this.scoreObject = new $.Score();
+	this.scoreObject = new $.Score(loadingMonitor);
 	this.scoreObject.rotation.x = Math.PI / 2;
 	this.scoreObject.startPosition = new THREE.Vector3(0, - 5, - 30);
 	this.scoreObject.showPosition = new THREE.Vector3(0, - 5, - 5);
@@ -20,7 +20,10 @@ $.ScoreView.prototype.load = function() {
 
 	this.starObjects = [];
 
-	new THREE.JSONLoader().load('asset/star.js', function(geometry) {
+	var starLoader = new THREE.JSONLoader();
+	
+	//loadingMonitor.add(starLoader);
+	starLoader.load('asset/star.js', function(geometry) {
 		geometry.computeBoundingBox();
 		THREE.GeometryUtils.center(geometry);
 
@@ -39,7 +42,7 @@ $.ScoreView.prototype.load = function() {
 		}
 	});
 
-	this.playButtonObject = new $.Button('asset/play.png', 0x6f916f);
+	this.playButtonObject = new $.Button('asset/play.png', loadingMonitor, 0x6f916f);
 	this.playButtonObject.scale.set(5, 5, 5);
 	this.playButtonObject.startPosition = new THREE.Vector3(100, - 10, - 9);
 	this.playButtonObject.showPosition = new THREE.Vector3(0, - 10, - 9);
@@ -82,7 +85,7 @@ $.ScoreView.prototype.showStars = function(count) {
 		var starObject = this.starObjects[i];
 
 		starObject.position.set((-count / 2 + i) * 10 + 5, 0, 5);
-		starObject.growTween(1000).delay(delay / $.SPEED).start();
+		starObject.starTween(1000).delay(delay / $.SPEED).start();
 
 		delay += 500;
 	}

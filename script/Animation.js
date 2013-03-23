@@ -86,6 +86,30 @@ THREE.Object3D.prototype.growTween = function(duration) {
 	return new TWEEN.Tween(from).to(to, duration / $.SPEED).easing(TWEEN.Easing.Elastic.Out).onStart(start).onUpdate(update);
 };
 
+THREE.Object3D.prototype.starTween = function(duration) {
+	var self = this;
+
+	var from = {
+		scaleX: 0,
+		scaleY: 0,
+		scaleZ: 0
+	};
+	var to = {
+		scaleX: this.scale.x,
+		scaleY: this.scale.y,
+		scaleZ: this.scale.z
+	};
+	var start = function() {
+			self.setVisible(true);
+			$.WORLD.playSound("applause", self.position, 1);
+		};
+	var update = function() {
+			self.scale.set(this.scaleX, this.scaleY, this.scaleZ);
+		};
+
+	return new TWEEN.Tween(from).to(to, duration / $.SPEED).easing(TWEEN.Easing.Elastic.Out).onStart(start).onUpdate(update);
+};
+
 THREE.Object3D.prototype.shrinkTween = function(duration) {
 	var self = this;
 	var base = self.scale.clone();
@@ -151,7 +175,7 @@ THREE.Object3D.prototype.bounceInTween = function(fromPosition, toPosition, dura
 };
 
 THREE.Object3D.prototype.blowTween = function(bubbles, radius) {
-	bubbles = bubbles || 20;
+	bubbles = bubbles || ($.HI) ? 20 : 5;
 	radius = radius || 10;
 
 	var self = this;

@@ -81,7 +81,9 @@ $.World.prototype.animate = function(time, duration) {
 	this.renderer.render(this.scene, this.camera);
 };
 
-$.World.prototype.addSound = function(id, asset) {
+$.World.prototype.addSound = function(id, asset, loadingMonitor) {
+	loadingMonitor.add(createjs.Sound);
+
 	createjs.Sound.registerSound(asset, id);
 };
 
@@ -192,7 +194,7 @@ $.World.prototype.onDocumentMouseMove = function(event) {
 		y: (event.clientY - this.windowSize.height / 2) / (this.windowSize.height / 2)
 	};
 
-	if (this.camera) {
+	if ((this.camera) && ($.HI)) {
 		this.camera.locateOffset(-this.mouse.y * 0.1, this.mouse.x * 0.1);
 		//this.camera.locateOffset(-this.mouse.y * 2, this.mouse.x * 2);
 	}

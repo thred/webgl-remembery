@@ -6,8 +6,8 @@ $.ScoreController = function() {
 
 $.ScoreController.prototype = Object.create($.Controller.prototype);
 
-$.ScoreController.prototype.load = function() {
-	this.view.load();
+$.ScoreController.prototype.load = function(loadingMonitor) {
+	this.view.load(loadingMonitor);
 };
 
 $.ScoreController.prototype.activate = function() {
@@ -39,7 +39,7 @@ $.ScoreController.prototype.countScoreTween = function() {
 			
 			if (this.value > next) {
 				$.WORLD.playSound("point");
-				next = Util.round(this.value + 25, 0, 25);
+				next = Util.round(this.value + 10, 0, 10);
 			}
 		};
 

@@ -26,18 +26,21 @@ $.Card.prototype.createGeometry = function() {
 	var shape = Util.createRoundedRectangleShape($.Card.SIZE, $.Card.SIZE, $.Card.SIZE / 8);
 	var geometry = new $.ExtrudeGeometry(shape, {
 		amount: $.Card.THICKNESS,
-		bevelSegments: 2,
-		steps: 2,
-		bevelSize: $.Card.THICKNESS / 100,
-		bevelThickness: $.Card.THICKNESS / 100,
+		bevelSegments: ($.HI) ? 2 : 0,
+		steps: ($.HI) ? 2 : 1,
+		bevelSize: ($.HI) ? $.Card.THICKNESS / 100 : 0,
+		bevelThickness: ($.HI) ? $.Card.THICKNESS / 100 : 0,
 		material: 0,
 		backMaterial: 1,
 		extrudeMaterial: 2
 	});
 
-	geometry.computeFaceNormals();
-	geometry.computeVertexNormals();
-	geometry.computeTangents();
+	if ($.HI) {
+		geometry.computeFaceNormals();
+		geometry.computeVertexNormals();
+		geometry.computeTangents();
+	}
+	
 	geometry.computeBoundingBox();
 	THREE.GeometryUtils.center(geometry);
 

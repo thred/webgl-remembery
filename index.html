@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>WebGL Remembery</title>
 <style>
 body {
 	margin: 0px;
@@ -17,56 +18,120 @@ div#message {
 	width: 100%;
 	text-align: center;
 }
+
+div#header {
+	position: absolute;
+	width: 100%;
+	text-align: center;
+}
+
+div#title {
+	position: absolute;
+	width: 100%;
+	top: 30%;
+	text-align: center;
+}
+
+span.bounds {
+	border: 2px solid orange;
+	background-color: #aa4400;
+	display: inline-block;
+	line-height: 0px;
+	padding: 2px;
+	margin: 4px;
+	border-radius: 32px;
+	box-shadow: 0px 2px 2px 2px #444;
+}
+
+h1 {
+	padding: 0px;
+	margin: 0px 64px;
+}
+
+a.button:hover, span#loading-percent {
+	background-color: orange;
+	display: inline-block;
+	border-radius: 28px;
+	margin: 0px;
+}
+
+span#loading-percent {
+	padding: 8px 0px;
+}
+
+a.button {
+	display: inline-block;
+}
 </style>
-<title>WebGL Remembery</title>
+<script src="script/lib/detector.js"></script>
+<script src="script/lib/three.js"></script>
+<script src="script/lib/soundjs.js"></script>
+<script src="script/lib/foo_regular.typeface.js"></script>
+<script src="script/lib/tween.js"></script>
+
+<script src="script/Remembery.js"></script>
+
+<script src="script/Bubble.js"></script>
+<script src="script/Button.js"></script>
+<script src="script/Card.js"></script>
+<script src="script/ExtrudeGeometry.js"></script>
+<script src="script/Score.js"></script>
+
+<script src="script/Animation.js"></script>
+<script src="script/Util.js"></script>
+<script src="script/LoadingMonitor.js"></script>
+
+<script src="script/View.js"></script>
+<script src="script/Controller.js"></script>
+
+<script src="script/FireworkView.js"></script>
+<script src="script/FireworkController.js"></script>
+
+<script src="script/IntroView.js"></script>
+<script src="script/IntroController.js"></script>
+
+<script src="script/SizeView.js"></script>
+<script src="script/SizeController.js"></script>
+
+<script src="script/BoardView.js"></script>
+<script src="script/BoardController.js"></script>
+
+<script src="script/ScoreView.js"></script>
+<script src="script/ScoreController.js"></script>
+
+<script src="script/World.js"></script>	
+
+<script src="script/Main.js"></script>	
 <!--<script data-main="script/main.js" src="script/require.js"></script>-->
 </head>
-<body>
+<body onLoad="$.activate()">
 	<div id="message"></div>
+	<div id="header">
+		<a href="https://github.com/thred/webgl-remembery" target="_blank"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub" /></a>
+	</div>
 	
-	<script src="script/lib/detector.js"></script>
-	<script src="script/lib/three.js"></script>
-	<script src="script/lib/soundjs.js"></script>
-	<script src="script/lib/foo_regular.typeface.js"></script>
-	<script src="script/lib/tween.js"></script>
-	
-	<script src="script/Remembery.js"></script>
-
-	<script src="script/Bubble.js"></script>
-	<script src="script/Button.js"></script>
-	<script src="script/Card.js"></script>
-	<script src="script/ExtrudeGeometry.js"></script>
-	<script src="script/Score.js"></script>
-
-	<script src="script/Animation.js"></script>
-	<script src="script/Util.js"></script>
-
-	<script src="script/View.js"></script>
-	<script src="script/Controller.js"></script>
-
-	<script src="script/FireworkView.js"></script>
-	<script src="script/FireworkController.js"></script>
-
-	<script src="script/IntroView.js"></script>
-	<script src="script/IntroController.js"></script>
-
-	<script src="script/SizeView.js"></script>
-	<script src="script/SizeController.js"></script>
-
-	<script src="script/BoardView.js"></script>
-	<script src="script/BoardController.js"></script>
-
-	<script src="script/ScoreView.js"></script>
-	<script src="script/ScoreController.js"></script>
-
-	<script src="script/World.js"></script>	
-
-	<script src="script/Main.js"></script>	
-
-	<script>
-		$.init();
-		$.animate();
-	</script>
+	<div id="title">
+		<span class="bounds">
+			<h1>
+				<img src="asset/title.png" alt="Remembery"/>
+			</h1>
+		</span>
+		<div id="buttons" style="display:none; visibility:hidden;">
+			<span class="bounds">
+				<a class="button" href="javascript:$.startLo()" title="Low Quality"><img src="asset/lo.png" alt="Low Quality"/></a>
+			</span>
+			<span class="bounds">
+				<a class="button" href="javascript:$.startHi()" title="High Quality"><img src="asset/hi.png" alt="High Quality"/></a>
+			</span>
+		</div>
+		<div id="loading" style="display:none; visibility:hidden;">
+			<span class="bounds">
+				<span id="loading-percent" style="margin: 0px 100px;">
+					<img src="asset/loading.png" alt="Loading"/>
+				</span>
+			</span>
+		</div>
+	</div>
 </body>
 
 </html>

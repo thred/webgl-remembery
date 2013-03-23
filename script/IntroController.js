@@ -6,8 +6,8 @@ $.IntroController = function() {
 
 $.IntroController.prototype = Object.create($.Controller.prototype);
 
-$.IntroController.prototype.load = function() {
-	this.view.load();
+$.IntroController.prototype.load = function(loadingMonitor) {
+	this.view.load(loadingMonitor);
 };
 
 $.IntroController.prototype.activate = function() {

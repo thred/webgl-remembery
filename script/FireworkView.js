@@ -6,15 +6,18 @@ $.FireworkView = function() {
 
 $.FireworkView.prototype = Object.create($.View.prototype);
 
-$.FireworkView.prototype.load = function() {
+$.FireworkView.prototype.load = function(loadingMonitor) {
 	this.bubbleBoundsGeometry = new THREE.PlaneGeometry(2, 2, 1, 1);
-	this.bubbleBoundsTexture = Util.createTexturedMaterial('asset/bubbleBounds.png', 1, true, 0.5);
+	this.bubbleBoundsTexture = Util.createTexturedMaterial('asset/bubbleBounds.png', loadingMonitor, 1, true, 0.5);
 	this.bubbleBoundsTexture.depthTest = false;
-	this.bubbleGeometry = new THREE.SphereGeometry(1, 16, 8);
-	this.bubbleTexture = Util.createTexturedMaterial('asset/bubble.png', 1, true, 0.5);
-	this.bubbleTexture.blending = THREE.AdditiveBlending;
-	this.bubbleTexture.side = THREE.DoubleSide;
-	this.bubbleTexture.depthTest = false;
+	
+	if ($.HI) {
+		this.bubbleGeometry = new THREE.SphereGeometry(1, 16, 8);
+		this.bubbleTexture = Util.createTexturedMaterial('asset/bubble.png', loadingMonitor, 1, true, 0.5);
+		this.bubbleTexture.blending = THREE.AdditiveBlending;
+		this.bubbleTexture.side = THREE.DoubleSide;
+		this.bubbleTexture.depthTest = false;
+	}
 };
 
 $.FireworkView.prototype.animate = function(time, duration) {
