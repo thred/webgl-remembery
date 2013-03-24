@@ -22,6 +22,12 @@ along with WebGL-Remembery. If not, see <http://www.gnu.org/licenses/>.
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <meta name="description" content="WebGL-Remembery is an implementation of a well known concentration game, also known as Memory, Pelmanism, Shinkei-suijaku, Pexeso or simply Pairs. It uses a technology called WebGL to create a 3D environment." />
 <meta name="google" content="notranslate" />
+<meta name="og:title" content="WegGL-Remembery" />
+<meta name="og:type" content="game" />
+<meta name="og:image" content="asset/logo.png" />
+<meta name="og:url" content="http://thred.github.com/webgl-remembery/" />
+<meta name="og:site_name" content="WegGL-Remembery" />
+<meta name="fb:admins" content="" />
 <title>WebGL-Remembery</title>
 <style>
 body {
@@ -167,6 +173,27 @@ a.button {
 				it under the terms of the <a href="http://www.gnu.org/">GNU General Public License</a>.
 			</p>
 			<p>
+				<div id="fb-root"></div>
+
+				<script>(function(d, s, id) {
+					  var js, fjs = d.getElementsByTagName(s)[0];
+					  if (d.getElementById(id)) return;
+					  js = d.createElement(s); js.id = id;
+					  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+					  fjs.parentNode.insertBefore(js, fjs);
+					}(document, 'script', 'facebook-jssdk'));
+				</script>
+
+				<div class="g-plusone" data-size="medium"></div>
+				<div class="fb-like" data-href="http://thred.github.com/webgl-remembery/" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false"></div>
+
+				<script type="text/javascript">
+				  (function() {
+				    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+				    po.src = 'https://apis.google.com/js/plusone.js';
+				    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+				  })();
+				</script>	
 			</p>
 		</div>
 		
@@ -180,6 +207,9 @@ a.button {
 		</span>
 		<div id="buttons" style="display:none; visibility:hidden;">
 			<span class="bounds">
+				<img src="asset/logo.png" style="width: 112px; height: 112px; padding: 8px;" alt="WebGL-Remembery Logo"/>
+			</span>
+			<span class="bounds">
 				<a class="button" href="javascript:$.startLo()" title="Low Quality"><img src="asset/lo.png" alt="Low Quality"/></a>
 			</span>
 			<span class="bounds">
@@ -192,17 +222,6 @@ a.button {
 					<img src="asset/loading.png" alt="Loading"/>
 				</span>
 			</span>
-		</div>
-		<div style="margin: 1em;">
-			<div class="g-plusone" data-size="medium"></div>
-
-			<script type="text/javascript">
-			  (function() {
-			    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-			    po.src = 'https://apis.google.com/js/plusone.js';
-			    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-			  })();
-			</script>		
 		</div>
 	</div>
 </body>
