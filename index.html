@@ -20,7 +20,9 @@ along with WebGL-Remembery. If not, see <http://www.gnu.org/licenses/>.
 -->
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>WebGL Remembery</title>
+<meta name="description" content="WebGL-Remembery is an implementation of a well known concentration game, also known as Memory, Pelmanism, Shinkei-suijaku, Pexeso or simply Pairs. It uses a technology called WebGL to create a 3D environment." />
+<meta name="google" content="notranslate" />
+<title>WebGL-Remembery</title>
 <style>
 body {
 	margin: 0px;
@@ -48,6 +50,10 @@ div#title {
 	width: 100%;
 	top: 30%;
 	text-align: center;
+}
+
+div#buttons, div#loading {
+	min-height: 164px;
 }
 
 div#footer {
@@ -141,7 +147,7 @@ a.button {
 	</div>
 	
 	<div id="footer">
-		<div style="float: right; max-width: 50em; text-align: right;">
+		<div style="float: right; max-width: 55%; text-align: right;">
 			<p>
 				Programming and Graphics: Copyright &copy; 2013 Manfred Hantschel
 			</p>
@@ -152,17 +158,18 @@ a.button {
 				Libraries: <a href="http://mrdoob.github.com/three.js/">three.js</a>, <a href="https://github.com/sole/tween.js/blob/master/src/Tween.js">tween.js</a> and <a href="http://www.createjs.com/#!/SoundJS">SoundJS</a>.
 			</p>
 		</div>
-		<div style="float: left; text-align: center;">
-			<p>
+		<div style="float: left; text-align: center; max-width: 35%;">
+			<p style="float: left;">
 				<a href="http://www.gnu.org/"><img src="http://www.gnu.org/graphics/gplv3-127x51.png" alt="GPL V3 Logo"/></a>
 			</p>
-		</div>
-		<div style="float: left; max-width: 25em;">
 			<p>
 				WebGL-Remembery is free software: you can redistribute it and/or modify
 				it under the terms of the <a href="http://www.gnu.org/">GNU General Public License</a>.
 			</p>
+			<p>
+			</p>
 		</div>
+		
 	</div>
 	
 	<div id="title">
@@ -185,6 +192,17 @@ a.button {
 					<img src="asset/loading.png" alt="Loading"/>
 				</span>
 			</span>
+		</div>
+		<div style="margin: 1em;">
+			<div class="g-plusone" data-size="medium"></div>
+
+			<script type="text/javascript">
+			  (function() {
+			    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+			    po.src = 'https://apis.google.com/js/plusone.js';
+			    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+			  })();
+			</script>		
 		</div>
 	</div>
 </body>
