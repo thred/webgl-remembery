@@ -1,5 +1,23 @@
 <!DOCTYPE HTML>
 <html>
+<!--
+Copyright 2013 Manfred Hantschel
+
+This file is part of WebGL-Remembery.
+
+WebGL-Remembery is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+WebGL-Remembery is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with WebGL-Remembery. If not, see <http://www.gnu.org/licenses/>.
+-->
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>WebGL Remembery</title>
@@ -8,7 +26,7 @@ body {
 	margin: 0px;
 	overflow: hidden;
 	background: url('asset/sky.png');
-	font: bold 200% sans-serif;
+	font-family: Verdana, sans-serif;
 	color: white;
 	text-shadow: 0px 0px 4px #000000;
 }
@@ -30,6 +48,17 @@ div#title {
 	width: 100%;
 	top: 30%;
 	text-align: center;
+}
+
+div#footer {
+	position: absolute;
+	width: 100%;
+	font-size: 80%;
+	bottom: 0px;
+}
+
+div#footer div {
+	margin: 0 1em;
 }
 
 span.bounds {
@@ -106,8 +135,34 @@ a.button {
 </head>
 <body onLoad="$.activate()">
 	<div id="message"></div>
+	
 	<div id="header">
 		<a href="https://github.com/thred/webgl-remembery" target="_blank"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub" /></a>
+	</div>
+	
+	<div id="footer">
+		<div style="float: right; max-width: 50em; text-align: right;">
+			<p>
+				Programming and Graphics: Copyright &copy; 2013 Manfred Hantschel
+			</p>
+			<p>
+				Audio: m1rk0@freesound.org, oldedgar@freesound.org, Splashdust@freesound.org, sergeeo@freesound.org, reelworldstudio@freesound.org, totya@freesound.org
+			</p>
+			<p>
+				Libraries: <a href="http://mrdoob.github.com/three.js/">three.js</a>, <a href="https://github.com/sole/tween.js/blob/master/src/Tween.js">tween.js</a> and <a href="http://www.createjs.com/#!/SoundJS">SoundJS</a>.
+			</p>
+		</div>
+		<div style="float: left; text-align: center;">
+			<p>
+				<a href="http://www.gnu.org/"><img src="http://www.gnu.org/graphics/gplv3-127x51.png" alt="GPL V3 Logo"/></a>
+			</p>
+		</div>
+		<div style="float: left; max-width: 25em;">
+			<p>
+				WebGL-Remembery is free software: you can redistribute it and/or modify
+				it under the terms of the <a href="http://www.gnu.org/">GNU General Public License</a>.
+			</p>
+		</div>
 	</div>
 	
 	<div id="title">

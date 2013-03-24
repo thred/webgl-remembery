@@ -1,3 +1,22 @@
+/**
+ * Copyright 2013 Manfred Hantschel
+ * 
+ * This file is part of WebGL-Remembery.
+ * 
+ * WebGL-Remembery is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * WebGL-Remembery is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with WebGL-Remembery. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 THREE.Camera.prototype.computeDistance = function(width, height) {
 	var ratio = (width / height) / ($.WORLD.windowSize.width / $.WORLD.windowSize.height);
 	return (height * Math.max(1, ratio) / 2) * (1 / Math.tan(Math.PI * this.fov / 360)) * 1.2;
@@ -210,7 +229,7 @@ Util.loadTexture = function(url, loadingMonitor) {
 		texture.needsUpdate = true;
 	});
 
-	loader.crossOrigin = 'anonymous';
+	loader.crossOrigin = THREE.ImageUtils.crossOrigin;
 	loader.load(url, image);
 
 	texture.sourceFile = url;

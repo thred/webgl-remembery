@@ -1,8 +1,16 @@
 /**
+ * Copyright (c) 2010-2013 three.js authors
+ *
+ * This file is part of three.js (https://github.com/mrdoob/three.js/)
+ * 
+ * Distributed under the terms of the MIT license.
+ * http://www.opensource.org/licenses/mit-license.html
+ *
+ * This notice shall be included in all copies or substantial portions of the Software.
+ * 
  * @author mrdoob / http://mrdoob.com/
  * @author Larry Battle / http://bateru.com/news
  */
-
 var THREE = THREE || { REVISION: '57' };
 
 self.console = self.console || {

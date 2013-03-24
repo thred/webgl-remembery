@@ -1,4 +1,11 @@
-// tween.js - http://github.com/sole/tween.js
+/**
+ * This file is part of tween.js (https://github.com/sole/tween.js/)
+ * 
+ * Distributed under the terms of the MIT license.
+ * http://www.opensource.org/licenses/mit-license.html
+ *
+ * This notice shall be included in all copies or substantial portions of the Software.
+ */
 'use strict';var TWEEN=TWEEN||function(){var a=[];return{REVISION:"9",getAll:function(){return a},removeAll:function(){a=[]},add:function(c){a.push(c)},remove:function(c){c=a.indexOf(c);-1!==c&&a.splice(c,1)},update:function(c){if(0===a.length)return!1;for(var b=0,e=a.length,c=void 0!==c?c:void 0!==window.performance&&void 0!==window.performance.now?window.performance.now():Date.now();b<e;)a[b].update(c)?b++:(a.splice(b,1),e--);return!0}}}();
 TWEEN.Tween=function(a){var c={},b={},e={},d=1E3,g=0,h=0,j=null,t=TWEEN.Easing.Linear.None,u=TWEEN.Interpolation.Linear,m=[],n=null,p=!1,q=null,r=null;this.to=function(a,c){void 0!==c&&(d=c);b=a;return this};this.start=function(d){TWEEN.add(this);p=!1;j=void 0!==d?d:void 0!==window.performance&&void 0!==window.performance.now?window.performance.now():Date.now();j+=h;for(var f in b)if(!(!1===f in a||null===a[f])){if(b[f]instanceof Array){if(0===b[f].length)continue;b[f]=[a[f]].concat(b[f])}c[f]=a[f];
 !1==c[f]instanceof Array&&(c[f]*=1);e[f]=c[f]}return this};this.stop=function(){TWEEN.remove(this);return this};this.delay=function(a){h=a;return this};this.repeat=function(a){g=a;return this};this.easing=function(a){t=a;return this};this.interpolation=function(a){u=a;return this};this.chain=function(){m=arguments;return this};this.onStart=function(a){n=a;return this};this.onUpdate=function(a){q=a;return this};this.onComplete=function(a){r=a;return this};this.update=function(l){if(l<j)return!0;!1===
