@@ -120,7 +120,7 @@ THREE.Object3D.prototype.starTween = function(duration) {
 	};
 	var start = function() {
 			self.setVisible(true);
-			$.WORLD.playSound("applause", self.position, 1);
+			$.WORLD.playSound("applause");
 		};
 	var update = function() {
 			self.scale.set(this.scaleX, this.scaleY, this.scaleZ);

@@ -31,7 +31,7 @@ $.FireworkView.prototype.load = function(loadingMonitor) {
 	this.bubbleBoundsTexture.depthTest = false;
 	
 	if ($.HI) {
-		this.bubbleGeometry = new THREE.SphereGeometry(1, 16, 8);
+		this.bubbleGeometry = new THREE.SphereGeometry(1, 8, 4);
 		this.bubbleTexture = Util.createTexturedMaterial('asset/bubble.png', loadingMonitor, 1, true, 0.5);
 		this.bubbleTexture.blending = THREE.AdditiveBlending;
 		this.bubbleTexture.side = THREE.DoubleSide;

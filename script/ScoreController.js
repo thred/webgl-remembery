@@ -33,9 +33,29 @@ $.ScoreController.prototype.activate = function() {
 	$.WORLD.addView(this.view);
 
 	this.countScoreTween().delay(3000 / $.SPEED).start();
-
+	
+	var dings = this.score / this.maxScore * 31;
+	
+	var stars = 0;
+	
+	if (dings >= 30) {
+		stars = 5;
+	}
+	else if (dings >= 28) {
+		stars = 4;
+	}
+	else if (dings >= 24) {
+		stars = 3;
+	}
+	else if (dings >= 16) {
+		stars = 2;
+	}
+	else {
+		stars = 1;
+	}
+	
 	$.MAIN.schedule(this, function() {
-		this.view.showStars(Math.round(this.score / this.maxScore * 5));
+		this.view.showStars(stars);
 	}, 6000);
 };
 
@@ -58,7 +78,7 @@ $.ScoreController.prototype.countScoreTween = function() {
 			
 			if (this.value > next) {
 				$.WORLD.playSound("point");
-				next = Util.round(this.value + 10, 0, 10);
+				next = Util.round(this.value + 25, 0, 25);
 			}
 		};
 

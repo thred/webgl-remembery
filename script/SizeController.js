@@ -26,8 +26,8 @@ $.SizeController = function() {
 $.SizeController.prototype = Object.create($.Controller.prototype);
 
 $.SizeController.prototype.BOARD_SIZES = [{
-	width: 2,
-	height: 1
+	width: 4,
+	height: 2
 }, {
 	width: 6,
 	height: 3
