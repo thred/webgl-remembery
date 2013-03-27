@@ -70,6 +70,7 @@ $.startHi = function() {
 
 $.activate = function() {
 	$.show(document.getElementById("buttons"));
+	$.show(document.getElementById("sniffer"));
 };
 
 $.load = function() {
