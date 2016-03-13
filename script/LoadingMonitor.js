@@ -19,40 +19,47 @@
 
 $.LoadingMonitor = function() {
 
-	THREE.EventDispatcher.call(this);
+    THREE.EventDispatcher.call(this);
 
-	var scope = this;
-	var loaded = 0;
-	var total = 0;
+    var scope = this;
+    var loaded = 0;
+    var total = 0;
 
-	var onLoad = function(event) {
-			loaded++;
+    var onLoad = function(event) {
+        loaded++;
 
-			scope.dispatchEvent({
-				type: 'progress',
-				loaded: loaded,
-				total: total
-			});
+        scope.dispatchEvent({
+            type: 'progress',
+            loaded: loaded,
+            total: total
+        });
 
-			if (loaded === total) {
+        console.log(`${loaded}/${total}`);
+        if (loaded === total) {
 
-				scope.dispatchEvent({
-					type: 'load'
-				});
+            scope.dispatchEvent({
+                type: 'load'
+            });
 
-			}
-		};
+        }
+    };
 
-	this.add = function(loader) {
-		total++;
+    this.add = function(loader) {
+        total++;
 
-		if (loader.addEventListener) {
-			loader.addEventListener('load', onLoad);
-			loader.addEventListener('loadComplete', onLoad);
-		}
-		else {
-			loader.onLoad = this.onLoad;
-		}
-	};
+        if (loader.on) {
+            loader.on("fileload", onLoad);
+        }
+        else if (loader.addEventListener) {
+            loader.addEventListener('load', onLoad);
+            loader.addEventListener('loadComplete', onLoad);
+        }
+        else {
+            loader.onLoad = this.onLoad;
+        }
+    };
+
+    this.addEventListener = THREE.EventDispatcher.prototype.addEventListener;
+    this.dispatchEvent = THREE.EventDispatcher.prototype.dispatchEvent;
 
 };
